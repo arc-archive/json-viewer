@@ -35,13 +35,13 @@ See js-max-number-error element documentation for more information.
 Custom property | Description | Default
 ----------------|-------------|----------
 `--json-viewer` | Mixin applied to the element | `{}`
-`--json-viewer-null-value-color` | Color of the null value. | `#708`
-`--json-viewer-boolean-value-color` | Color of the boolean value | `#708`
-`--json-viewer-punctuation-color` | Punctuation color. | `black`
-`--json-viewer-string-value-color` | Color of the string value. | `#48A`
-`--json-viewer-property-name-color` | Color of the JSON property. | `rgb(206, 123, 0)`
-`--json-viewer-array-key-color` | Color of the array counter. | `rgb(119, 119, 119)`
-`--json-viewer-link-color` | Color of link inserted into the viewer. | `#1976d2`
+`--code-type-null-value-color` | Color of the null value. | `#708`
+`--code-type-boolean-value-color` | Color of the boolean value | `#708`
+`--code-punctuation-value-color` | Punctuation color. | `black`
+`--code-type-number-value-color` | Color of the numeric value | `blue`
+`--code-type-text-value-color` | Color of the string value. | `#48A`
+`--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
+`--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
 
 
 
