@@ -50,13 +50,13 @@ See js-max-number-error element documentation for more information.
 Custom property | Description | Default
 ----------------|-------------|----------
 `--json-viewer` | Mixin applied to the element | `{}`
-`--json-viewer-null-value-color` | Color of the null value. | `#708`
-`--json-viewer-boolean-value-color` | Color of the boolean value | `#708`
-`--json-viewer-punctuation-color` | Punctuation color. | `black`
-`--json-viewer-string-value-color` | Color of the string value. | `#48A`
-`--json-viewer-property-name-color` | Color of the JSON property. | `rgb(206, 123, 0)`
-`--json-viewer-array-key-color` | Color of the array counter. | `rgb(119, 119, 119)`
-`--json-viewer-link-color` | Color of link inserted into the viewer. | `#1976d2`
+`--code-type-null-value-color` | Color of the null value. | `#708`
+`--code-type-boolean-value-color` | Color of the boolean value | `#708`
+`--code-punctuation-value-color` | Punctuation color. | `black`
+`--code-type-number-value-color` | Color of the numeric value | `blue`
+`--code-type-text-value-color` | Color of the string value. | `#48A`
+`--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
+`--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
 
 @group UI Elements
 @element json-viewer
@@ -88,23 +88,23 @@ Custom property | Description | Default
     }
 
     .numeric {
-      color: blue;
+      color: var(--code-type-number-value-color, blue);
     }
 
     .nullValue {
-      color: var(--json-viewer-null-value-color, #708);
+      color: var(--code-type-null-value-color, #708);
     }
 
     .booleanValue {
-      color: var(--json-viewer-boolean-value-color, #708);
+      color: var(--code-type-boolean-value-color, #708);
     }
 
     .punctuation {
-      color: var(--json-viewer-punctuation-color, black);
+      color: var(--code-punctuation-value-color, black);
     }
 
     .stringValue {
-      color: var(--json-viewer-string-value-color, #48A);
+      color: var(--code-type-text-value-color, #48A);
     }
 
     .node {
@@ -138,7 +138,7 @@ Custom property | Description | Default
     }
 
     .key-name {
-      color: var(--json-viewer-property-name-color, rgb(206, 123, 0));
+      color: var(--code-type-text-value-color, #48A);
     }
 
     .rootElementToggleButton {
@@ -156,7 +156,7 @@ Custom property | Description | Default
     }
 
     .array-key-number {
-      color: var(--json-viewer-array-key-color, rgb(119, 119, 119));
+      color: var(--code-array-index-color, rgb(119, 119, 119));
     }
 
     .info-row {
@@ -186,7 +186,7 @@ Custom property | Description | Default
     }
 
     a[response-anchor] {
-      color: var(--json-viewer-link-color, #1976d2);
+      color: var(--code-type-link-color, #1976d2);
     }
 
     paper-spinner:not([active]) {
@@ -382,13 +382,13 @@ Custom property | Description | Default
           this.cssPrefix + 'node">';
         var _nan = isNaN(key);
         if (_nan) {
-          result += '"';
+          result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
         }
         result += this.parseKey(key);
         if (_nan) {
-          result += '"';
+          result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
         }
-        result += ': ' + data;
+        result += '<span class="' + this.cssPrefix + 'punctuation">:</span> ' + data;
         if (hasManyChildren) {
           result += '<div data-toggle="' + elementNo + '" class="' + this.cssPrefix +
             'rootElementToggleButton"></div>';
