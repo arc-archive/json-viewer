@@ -23,6 +23,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-input/paper-textarea.html">
   <link rel="import" href="../../paper-input/paper-input.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
+  <link rel="import" href="../../arc-icons/arc-icons.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
 
   <link rel="import" href="../json-viewer.html">
 
@@ -40,8 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body unresolved>
   <div class="vertical-section-container centered">
-    <h3>The `json-viewer`</h3>
-
+    <h3>Search in JSON view</h3>
     <demo-snippet>
       <template is="dom-bind" id="auto">
         <paper-input class="query" label="Search in JSON" value="{{query}}"></paper-input>
@@ -49,7 +50,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </demo-snippet>
 
-    <h3>The `json-viewer`</h3>
+    <h3>Content actions</h3>
+    <demo-snippet>
+      <template is="dom-bind" id="ca">
+        <json-viewer json="[[json]]">
+          <paper-icon-button content-action title="Copy content to clipboard" icon="arc:content-copy" on-tap="_copyToClipboard"></paper-icon-button>
+          <paper-icon-button content-action title="See raw response" icon="arc:visibility" on-tap="_seeRaw"></paper-icon-button>
+          <paper-button content-action on-tap="_saveFile">save to file</paper-button>
+        </json-viewer>
+      </template>
+    </demo-snippet>
+
+    <h3>Live preview</h3>
     <demo-snippet>
       <template is="dom-bind" id="manual">
         <paper-textarea label="Enter JSON value" value="{{json}}"></paper-textarea>
@@ -58,12 +70,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </demo-snippet>
     <paper-toast></paper-toast>
     <script>
-    var scope = document.querySelector('#auto');
-    var scope2 = document.querySelector('#manual');
-    scope2._onLinkChange = scope._onLinkChange = function(e) {
+    function setToast(text) {
       var toast = document.querySelector('paper-toast');
-      toast.text = 'Selected URL: ' + e.detail.url;
+      toast.text = text;
       toast.opened = true;
+    }
+    var scopeAuto = document.querySelector('#auto');
+    var scopeManual = document.querySelector('#manual');
+    var scopeCa = document.querySelector('#ca');
+    scopeManual._onLinkChange = scopeAuto._onLinkChange = function(e) {
+      setToast(e.detail.url);
+    };
+    scopeCa.json = '{"title": "Person Schema","type": "object","properties": {"firstName": {"type": "string"},"lastName": {"type": "string"},"age": {"description": "Age in years","type": "integer","minimum": 0}},"required": ["firstName", "lastName"]}';
+    scopeCa._copyToClipboard = function() {
+      setToast('Copy to clipboad called');
+    };
+    scopeCa._seeRaw = function() {
+      setToast('Toggle raw view called');
+    };
+    scopeCa._saveFile = function() {
+      setToast('Save to file called');
     };
     </script>
   </div>
