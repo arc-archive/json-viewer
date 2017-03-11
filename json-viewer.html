@@ -14,6 +14,7 @@ the License.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../text-search-behavior/text-search-behavior.html">
 <link rel="import" href="../paper-spinner/paper-spinner.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="js-max-number-error.html">
 
 <!--
@@ -43,6 +44,20 @@ and locates the numeric value in source json if passed json was a string or
 when `raw` attribute was set. In this case it will display a warning and
 explanation about use of big numbers in JavaScript.
 See js-max-number-error element documentation for more information.
+
+## Content actions
+The element can render a actions pane above the code view. Action pane is to
+display content actions that is relevan in context of the response displayed
+below the icon buttons. It should be icon buttons or just buttons added to this
+view.
+
+Buttons need to have `content-action` property set to be included to this view.
+
+```
+<json-viewer json='{"json": "test"}'>
+  <paper-icon-button content-action title="Copy content to clipboard" icon="arc:content-copy"></paper-icon-button>
+</json-viewer>
+```
 
 ### Styling
 `<json-viewer>` provides the following custom properties and mixins for styling:
@@ -193,10 +208,22 @@ Custom property | Description | Default
       display: none;
     }
 
+    .actions-panel {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      @apply(--response-raw-viewer-action-bar);
+    }
+
+    .actions-panel.hidden {
+      display: none;
+    }
     </style>
     <paper-spinner active="[[working]]"></paper-spinner>
     <div class="error" hidden$="[[!isError]]">
       <p>There was an error parsing JSON data</p>
+    </div>
+    <div class$="[[_computeActionsPanelClass(showOutput)]]">
+      <content select="[content-action]"></content>
     </div>
     <output id="output" hidden$="[[!showOutput]]" on-tap="_handleDisplayClick"></output>
     <script id="jsonWorker" type="text/js-worker">
@@ -453,32 +480,6 @@ Custom property | Description | Default
     </script>
   </template>
   <script>
-  var importLocation = '';
-  (function() {
-    if (window.currentImport && window.currentImport.URL) {
-      var url = window.currentImport.URL;
-      if (url === 'about:blank' && window.currentImport._URL) {
-        url = window.currentImport._URL;
-      }
-      if (url === 'about:blank') {
-        importLocation = '../';
-        // in test cases for edge this will fail because it should be set to ../../
-        // but right now I can't waste time to check how to check if this is the particular case.
-      } else {
-        var path = url.substr(url.indexOf('/', url.indexOf('/') + 2))
-          .replace('json-viewer.html', '');
-        var lastDot = path.lastIndexOf('.');
-        if (lastDot !== -1 && path.substr(lastDot + 1) === 'html') {
-          // remove element file name path
-          path = path.substr(0, path.lastIndexOf('/') + 1);
-        }
-        if (path.indexOf('/test') !== -1) {
-          path = path.substr(0, path.lastIndexOf('/') + 1);
-        }
-        importLocation = path;
-      }
-    }
-  })();
   Polymer({
     is: 'json-viewer',
     /**
@@ -614,7 +615,6 @@ Custom property | Description | Default
           type: 'text/javascript'
         });
         var worker = new Worker(window.URL.createObjectURL(blob));
-        // var worker = new Worker(importLocation + 'jsonviewer.js');
         worker.addEventListener('message', this._workerDataHandler);
         worker.addEventListener('error', this._workerErrorHandler);
         this._worker = worker;
@@ -656,12 +656,6 @@ Custom property | Description | Default
         this.fire('action-link-change', {
           url: e.target.getAttribute('href')
         });
-        // this.fire('send-analytics', {
-        //   type: 'event',
-        //   category: 'Response status',
-        //   action: 'Link change',
-        //   label: 'From JSON viewer'
-        // });
         return;
       }
       var toggleId = e.target.dataset.toggle;
@@ -680,13 +674,34 @@ Custom property | Description | Default
         parent.dataset.expanded = 'true';
       }
     },
-
+    /**
+     * Called automatically when the `query` property change.
+     * It highlights word occurence in the JSON viewer.
+     *
+     * This function is called automatically when the `query` property change.
+     *
+     * @param {String} query Current `query` value.
+     */
     _queryChanged: function(query) {
       if (!query) {
         this.cleanMarked();
         return;
       }
       this.mark(query);
+    },
+    /**
+     * Computes CSS class for the actions pane.
+     *
+     * @param {Boolean} showOutput The `showOutput` propety value of the element.
+     * @return CSS class names for the panel depending on state of the
+     * `showOutput`property.
+     */
+    _computeActionsPanelClass: function(showOutput) {
+      var clazz = 'actions-panel';
+      if (!showOutput) {
+        clazz += ' hidden';
+      }
+      return clazz;
     }
   });
   </script>

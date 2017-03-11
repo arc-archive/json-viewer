@@ -29,11 +29,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
+    <test-fixture id="ca">
+      <template>
+        <json-viewer>
+          <paper-icon-button content-action></paper-icon-button>
+        </json-viewer>
+      </template>
+    </test-fixture>
+
     <script>
     /* global suite, test, fixture, assert, sinon, MockInteractions */
     suite('basic', function() {
       var element;
       var output;
+
       setup(function(done) {
         element = fixture('basic');
         output = Polymer.dom(element.root).querySelector('#output');
@@ -45,6 +54,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         });
       });
+
       test('Should have parsed HTML', function() {
         var html = output.innerHTML;
         assert.isString(html);
@@ -68,6 +78,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(spy.calledOnce);
       });
 
+      test('Should mark search phrase', function() {
+        element.query = 'test';
+        var marks = output.querySelectorAll('mark.arc-search-mark');
+        assert.equal(marks.length, 3);
+      });
+
+    });
+
+    suite('content actions', function() {
+      var element;
+
+      setup(function() {
+        element = fixture('ca');
+      });
+
+      test('Should have distributed nodes', function() {
+        var buttons = element.queryAllEffectiveChildren('paper-icon-button');
+        assert.equal(buttons.length, 1);
+      });
     });
     </script>
 

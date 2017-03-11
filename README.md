@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/advanced-rest-client/json-viewer.svg?branch=master)](https://travis-ci.org/advanced-rest-client/json-viewer)  
+[![Build Status](https://travis-ci.org/advanced-rest-client/json-viewer.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/json-viewer)  
 
 # json-viewer
 
@@ -28,6 +28,20 @@ and locates the numeric value in source json if passed json was a string or
 when `raw` attribute was set. In this case it will display a warning and
 explanation about use of big numbers in JavaScript.
 See js-max-number-error element documentation for more information.
+
+## Content actions
+The element can render a actions pane above the code view. Action pane is to
+display content actions that is relevan in context of the response displayed
+below the icon buttons. It should be icon buttons or just buttons added to this
+view.
+
+Buttons need to have `content-action` property set to be included to this view.
+
+```
+<json-viewer json='{"json": "test"}'>
+  <paper-icon-button content-action title="Copy content to clipboard" icon="arc:content-copy"></paper-icon-button>
+</json-viewer>
+```
 
 ### Styling
 `<json-viewer>` provides the following custom properties and mixins for styling:
