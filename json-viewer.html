@@ -480,32 +480,6 @@ Custom property | Description | Default
     </script>
   </template>
   <script>
-  var importLocation = '';
-  (function() {
-    if (window.currentImport && window.currentImport.URL) {
-      var url = window.currentImport.URL;
-      if (url === 'about:blank' && window.currentImport._URL) {
-        url = window.currentImport._URL;
-      }
-      if (url === 'about:blank') {
-        importLocation = '../';
-        // in test cases for edge this will fail because it should be set to ../../
-        // but right now I can't waste time to check how to check if this is the particular case.
-      } else {
-        var path = url.substr(url.indexOf('/', url.indexOf('/') + 2))
-          .replace('json-viewer.html', '');
-        var lastDot = path.lastIndexOf('.');
-        if (lastDot !== -1 && path.substr(lastDot + 1) === 'html') {
-          // remove element file name path
-          path = path.substr(0, path.lastIndexOf('/') + 1);
-        }
-        if (path.indexOf('/test') !== -1) {
-          path = path.substr(0, path.lastIndexOf('/') + 1);
-        }
-        importLocation = path;
-      }
-    }
-  })();
   Polymer({
     is: 'json-viewer',
     /**
@@ -641,7 +615,6 @@ Custom property | Description | Default
           type: 'text/javascript'
         });
         var worker = new Worker(window.URL.createObjectURL(blob));
-        // var worker = new Worker(importLocation + 'jsonviewer.js');
         worker.addEventListener('message', this._workerDataHandler);
         worker.addEventListener('error', this._workerErrorHandler);
         this._worker = worker;
