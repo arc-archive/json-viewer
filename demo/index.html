@@ -43,7 +43,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <h3>The `json-viewer`</h3>
 
     <demo-snippet>
-      <template is="dom-bind">
+      <template is="dom-bind" id="auto">
         <paper-input class="query" label="Search in JSON" value="{{query}}"></paper-input>
         <json-viewer query="[[query]]" whole-match json='{"test": "test", "numeric": 1234567, "boolean": true, "nullable": null, "array": ["test", 123456], "object": {"sub-property": "value"}, "long": 12345678901112131415, "link": "http://domain.com", "relativeLink": "/path/to/resource.html"}' on-action-link-change="_onLinkChange"></json-viewer>
       </template>
@@ -51,17 +51,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <h3>The `json-viewer`</h3>
     <demo-snippet>
-      <template is="dom-bind">
-        <paper-textarea label="Enter JSON value" value="{{json}}" on-action-link-change="_onLinkChange"></paper-textarea>
-        <json-viewer json="[[json]]"></json-viewer>
+      <template is="dom-bind" id="manual">
+        <paper-textarea label="Enter JSON value" value="{{json}}"></paper-textarea>
+        <json-viewer json="[[json]]" on-action-link-change="_onLinkChange"></json-viewer>
       </template>
     </demo-snippet>
     <paper-toast></paper-toast>
     <script>
-    var scope = document.querySelector('template[is="dom-bind"]');
-    var scope2 = document.querySelectorAll('template[is="dom-bind"]')[1];
-    scope._onLinkChange = scope2._onLinkChange = function(e) {
-      console.log(e.detail);
+    var scope = document.querySelector('#auto');
+    var scope2 = document.querySelector('#manual');
+    scope2._onLinkChange = scope._onLinkChange = function(e) {
       var toast = document.querySelector('paper-toast');
       toast.text = 'Selected URL: ' + e.detail.url;
       toast.opened = true;
