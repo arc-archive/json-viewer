@@ -258,8 +258,8 @@ Custom property | Description | Default
       var jsonData = data.json;
       this.rawData = data.raw || '';
       this.cssPrefix = data.cssPrefix || '';
+      this.debug = data.debug || false;
       this._numberIndexes = {}; // Regexp number indexes
-      this.linkRegExp = /([^"\s&;<>]*:\/\/[^"\s<>]*)(&quot;|&lt;|&gt;)?/gim;
       this.jsonValue = null;
       this.latestError = null;
       this.elementsCounter = 0;
@@ -277,19 +277,57 @@ Custom property | Description | Default
       }
     }
     /**
+     * Uses the performance API to mark an event.
+     */
+    JSONViewer.prototype.mark = function(title) {
+      // I hate you IE! <\3
+      if (!this.debug) {
+        return;
+      }
+      if (!(performance in self)) {
+        return;
+      }
+      performance.mark(title);
+    };
+    /**
+     * Creates a list of measurements performed during the HTML generation.
+     */
+    JSONViewer.prototype.getMeasurements = function() {
+      if (!this.debug) {
+        return;
+      }
+      if (!(performance in self)) {
+        return;
+      }
+      performance.measure('get-html', 'get-html-start', 'get-html-end');
+      var items = performance.getEntriesByType('mark');
+      items.forEach(function(mark) {
+        if (~mark.name.indexOf('parse-start-')) {
+          var id = mark.name.substr(12);
+          performance.measure('parse-' + id, 'parse-start-' + id, 'parse-start-' + id);
+        }
+      });
+      var items = performance.getEntriesByType('measure');
+      var result = items.map(function(measure) {
+        return {
+          duration: measure.duration,
+          name: measure.name,
+          startTime: measure.startTime
+        }
+      });
+      return {
+        items: result
+      };
+    };
+    /**
      * Get created HTML content.
      */
     JSONViewer.prototype.getHTML = function() {
+      this.mark('get-html-start');
       var parsedData = '<div class="' + this.cssPrefix + 'prettyPrint">';
       parsedData += this.parse(this.jsonValue);
       parsedData += '</div>';
-
-      var replace = '<a class="' + this.cssPrefix + '" title="Click to insert into URL field" ';
-      replace += 'response-anchor href="$1">$1</a>';
-      var match = parsedData.match(this.linkRegExp);
-      replace = replace.replace(/\$0/, match);
-      parsedData = parsedData.replace(this.linkRegExp, replace);
-
+      this.mark('get-html-end');
       return parsedData;
     };
     /**
@@ -297,7 +335,9 @@ Custom property | Description | Default
      */
     JSONViewer.prototype.parse = function(data, opts) {
       opts = opts || {};
-
+      this.__parseCallCounter = this.__parseCallCounter || 0;
+      this.__parseCallCounter++;
+      this.mark('parse-start-' + this.__parseCallCounter);
       var result = '';
       if (data === null) {
         result += this.parseNullValue();
@@ -315,6 +355,7 @@ Custom property | Description | Default
       if (opts.hasNextSibling && !opts.holdComa) {
         result += '<span class="' + this.cssPrefix + 'punctuation hidden">,</span>';
       }
+      this.mark('parse-end-' + this.__parseCallCounter);
       return result;
     };
 
@@ -328,7 +369,7 @@ Custom property | Description | Default
 
     JSONViewer.prototype.parseNumericValue = function(number) {
       var expectedNumber;
-      if (number > Number.MAX_SAFE_INTEGER) {
+      if (number > 9007199254740991) { // IE doesn't support Number.MAX_SAFE_INTEGER
         var comp = String(number);
         comp = comp.substr(0, 16);
         var r = new RegExp(comp + '(\\d+),?', 'gim');
@@ -373,24 +414,24 @@ Custom property | Description | Default
       var value = str || '';
       if (value !== null && value !== undefined) {
         value = SafeHtmlUtils.htmlEscape(value);
-        if (value.slice(0, 1) === '/') {
+        if (value.slice(0, 1) === '/' || value.substr(0, 4) === 'http') {
           value = '<a class="' + this.cssPrefix + '" title="Click to insert into URL field" ' +
             'response-anchor add-root-url href="' + value + '">' + value + '</a>';
         }
       } else {
         value = 'null';
       }
-      result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
+      result += '&quot;';
       result += '<span class="' + this.cssPrefix + 'stringValue">';
       result += value;
       result += '</span>';
-      result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
+      result += '&quot;';
       return result;
     };
 
     JSONViewer.prototype.parseObject = function(object) {
       var result = '';
-      result += '<div class="' + this.cssPrefix + 'punctuation brace">{</div>';
+      result += '{';
       result += '<div collapse-indicator class="' + this.cssPrefix + 'info-row">...</div>';
       Object.getOwnPropertyNames(object)
       .forEach(function(key, i, arr) {
@@ -409,20 +450,20 @@ Custom property | Description | Default
           this.cssPrefix + 'node">';
         var _nan = isNaN(key);
         if (_nan) {
-          result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
+          result += '&quot;';
         }
         result += this.parseKey(key);
         if (_nan) {
-          result += '<span class="' + this.cssPrefix + 'punctuation">&quot;</span>';
+          result += '&quot;';
         }
-        result += '<span class="' + this.cssPrefix + 'punctuation">:</span> ' + data;
+        result += ': ' + data;
         if (hasManyChildren) {
           result += '<div data-toggle="' + elementNo + '" class="' + this.cssPrefix +
             'rootElementToggleButton"></div>';
         }
         result += '</div>';
       }, this);
-      result += '<div class="' + this.cssPrefix + 'punctuation brace">}</div>';
+      result += '}';
       return result;
     };
 
@@ -462,20 +503,31 @@ Custom property | Description | Default
     };
 
     self.onmessage = function(e) {
-      var parser = new JSONViewer(e.data);
-      if (parser.latestError !== null) {
+      try {
+        var parser = new JSONViewer(e.data);
+        if (parser.latestError !== null) {
+          self.postMessage({
+            message: parser.latestError,
+            error: true
+          });
+          return;
+        }
+        var html = parser.getHTML();
+        var result = {
+          message: html,
+          error: false
+        };
+        if (e.data.debug) {
+          result.measurement = parser.getMeasurements();
+        }
+        self.postMessage(result);
+        parser = null;
+      } catch (e) {
         self.postMessage({
-          message: parser.latestError,
+          message: e.message,
           error: true
         });
-        return;
       }
-      var result = parser.getHTML();
-      parser = null;
-      self.postMessage({
-        message: result,
-        error: false
-      });
     };
     </script>
   </template>
@@ -487,6 +539,11 @@ Custom property | Description | Default
      *
      * @event action-link-change
      * @param {String} url The URL handled by this event.
+     */
+    /**
+     * Fired when web worker finished work and the data are displayed.
+     *
+     * @event json-viewer-parsed
      */
     properties: {
       /**
@@ -569,7 +626,9 @@ Custom property | Description | Default
       query: {
         type: String,
         observer: '_queryChanged'
-      }
+      },
+      // If true then it prints the execution time to the console.
+      debug: Boolean
     },
 
     behaviors: [
@@ -584,11 +643,21 @@ Custom property | Description | Default
         // Created URL via URL.createObjectURL will be cleaned by the browser.
       }
     },
+
+    ready: function() {
+      this._isReady = true;
+      if (this.json) {
+        this._changed(this.json);
+      }
+    },
+
     // Called when `json` property changed. It starts parsing the data.
-    _changed: function() {
+    _changed: function(json) {
+      if (!this._isReady) {
+        return;
+      }
       this._setIsError(false);
       this.$.output.innerText = '';
-      var json = this.json;
       if (json === undefined) {
         return;
       }
@@ -619,10 +688,16 @@ Custom property | Description | Default
         worker.addEventListener('error', this._workerErrorHandler);
         this._worker = worker;
       }
+      var debug = this.debug;
+      var ua = navigator.userAgent;
+      if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident') !== -1) {
+        debug = false; // performance API is not available in web workers in IE....
+      }
       this._worker.postMessage({
         json: json,
         raw: this.raw,
-        cssPrefix: this.nodeName.toLowerCase() + ' style-scope '
+        cssPrefix: this.nodeName.toLowerCase() + ' style-scope ',
+        debug: debug
       });
     },
     // Called when worker data received.
@@ -635,15 +710,30 @@ Custom property | Description | Default
         this.$.output.innerHTML = data.message;
       }
       this._setWorking(false);
+      if (this.debug) {
+        if (data.measurement.items && data.measurement.items.length) {
+          console.groupCollapsed('JSON viewer parse measurements');
+          console.table(data.measurement.items);
+          console.groupEnd();
+        }
+      }
+      this.fire('json-viewer-parsed');
     },
     // Called when workr error received.
     _workerError: function() {
       this._setIsError(true);
       this._setWorking(false);
+      this.fire('json-viewer-parsed');
     },
     // Compute if output should be shown.
     _computeShowOutput: function(working, isError, json) {
-      return !working && !isError && (!!json && json !== null && json !== false);
+      if (working) {
+        return false;
+      }
+      if (isError) {
+        return true;
+      }
+      return !!json && json !== null && json !== false;
     },
     // Called when the user click on the display area. It will handle view toggle and links clicks.
     _handleDisplayClick: function(e) {
