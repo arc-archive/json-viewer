@@ -25,6 +25,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-toast/paper-toast.html">
   <link rel="import" href="../../arc-icons/arc-icons.html">
   <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../../fetch-polyfill/fetch-polyfill.html">
+  <link rel="import" href="../../promise-polyfill/promise-polyfill.html">
 
   <link rel="import" href="../json-viewer.html">
 
@@ -46,14 +48,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <demo-snippet>
       <template is="dom-bind" id="auto">
         <paper-input class="query" label="Search in JSON" value="{{query}}"></paper-input>
-        <json-viewer query="[[query]]" whole-match json='{"test": "test", "numeric": 1234567, "boolean": true, "nullable": null, "array": ["test", 123456], "object": {"sub-property": "value"}, "long": 12345678901112131415, "link": "http://domain.com", "relativeLink": "/path/to/resource.html"}' on-action-link-change="_onLinkChange"></json-viewer>
+        <json-viewer debug query="[[query]]" whole-match json='{"test": "test", "numeric": 1234567, "boolean": true, "nullable": null, "array": ["test", 123456], "object": {"sub-property": "value"}, "long": 12345678901112131415, "link": "http://domain.com", "relativeLink": "/path/to/resource.html"}' on-action-link-change="_onLinkChange"></json-viewer>
       </template>
     </demo-snippet>
 
     <h3>Content actions</h3>
     <demo-snippet>
       <template is="dom-bind" id="ca">
-        <json-viewer json="[[json]]">
+        <json-viewer json="[[json]]" debug>
           <paper-icon-button content-action title="Copy content to clipboard" icon="arc:content-copy" on-tap="_copyToClipboard"></paper-icon-button>
           <paper-icon-button content-action title="See raw response" icon="arc:visibility" on-tap="_seeRaw"></paper-icon-button>
           <paper-button content-action on-tap="_saveFile">save to file</paper-button>
@@ -81,7 +83,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     scopeManual._onLinkChange = scopeAuto._onLinkChange = function(e) {
       setToast(e.detail.url);
     };
-    scopeCa.json = '{"title": "Person Schema","type": "object","properties": {"firstName": {"type": "string"},"lastName": {"type": "string"},"age": {"description": "Age in years","type": "integer","minimum": 0}},"required": ["firstName", "lastName"]}';
+    function getFromUrl(url) {
+      fetch(url)
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(text) {
+        scopeCa.json = text;
+      });
+    }
     scopeCa._copyToClipboard = function() {
       setToast('Copy to clipboad called');
     };
@@ -91,6 +101,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     scopeCa._saveFile = function() {
       setToast('Save to file called');
     };
+
+    getFromUrl('./example.json');
     </script>
   </div>
 </body>
