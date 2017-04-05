@@ -1,3 +1,23 @@
+<a name="0.1.6"></a>
+## [0.1.6](https://github.com/advanced-rest-client/json-viewer/compare/0.1.4...v0.1.6) (2017-04-05)
+
+
+### Fix
+
+* Made the component work in IE... ([cca84af3cd3cce5270fbb77960f1641d2bf4d0ce](https://github.com/advanced-rest-client/json-viewer/commit/cca84af3cd3cce5270fbb77960f1641d2bf4d0ce))
+
+### Update
+
+* Huge performance improvements. Over 7000% better performacne when parsing long strings. Removed regexp checking for links in text. Added performance measurement when debug property is set ([ec5557126fe412b0f624db37b3e03c4c332494fd](https://github.com/advanced-rest-client/json-viewer/commit/ec5557126fe412b0f624db37b3e03c4c332494fd))
+
+
+
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/advanced-rest-client/json-viewer/compare/0.1.4...v0.1.5) (2017-04-05)
+
+
+
+
 <a name="0.1.4"></a>
 ## [0.1.4](https://github.com/advanced-rest-client/json-viewer/compare/0.1.3...v0.1.4) (2017-03-11)
 
