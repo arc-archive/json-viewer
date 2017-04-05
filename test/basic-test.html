@@ -47,7 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element = fixture('basic');
         output = Polymer.dom(element.root).querySelector('#output');
         var finished = false;
-        element.addEventListener('working-changed', function(e) {
+        element.addEventListener('json-viewer-parsed', function(e) {
           if (!e.detail.value && !finished) {
             finished = true;
             done();

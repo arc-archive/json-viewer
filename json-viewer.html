@@ -280,17 +280,25 @@ Custom property | Description | Default
      * Uses the performance API to mark an event.
      */
     JSONViewer.prototype.mark = function(title) {
-      if (this.debug && performance && performance.mark) {
-	      performance.mark(title);
-	    }
+      // I hate you IE! <\3
+      if (!this.debug) {
+        return;
+      }
+      if (!(performance in self)) {
+        return;
+      }
+      performance.mark(title);
     };
     /**
      * Creates a list of measurements performed during the HTML generation.
      */
     JSONViewer.prototype.getMeasurements = function() {
-      if (!(this.debug && performance && performance.mark)) {
-	      return;
-	    }
+      if (!this.debug) {
+        return;
+      }
+      if (!(performance in self)) {
+        return;
+      }
       performance.measure('get-html', 'get-html-start', 'get-html-end');
       var items = performance.getEntriesByType('mark');
       items.forEach(function(mark) {
@@ -361,7 +369,7 @@ Custom property | Description | Default
 
     JSONViewer.prototype.parseNumericValue = function(number) {
       var expectedNumber;
-      if (number > Number.MAX_SAFE_INTEGER) {
+      if (number > 9007199254740991) { // IE doesn't support Number.MAX_SAFE_INTEGER
         var comp = String(number);
         comp = comp.substr(0, 16);
         var r = new RegExp(comp + '(\\d+),?', 'gim');
@@ -495,24 +503,31 @@ Custom property | Description | Default
     };
 
     self.onmessage = function(e) {
-      var parser = new JSONViewer(e.data);
-      if (parser.latestError !== null) {
+      try {
+        var parser = new JSONViewer(e.data);
+        if (parser.latestError !== null) {
+          self.postMessage({
+            message: parser.latestError,
+            error: true
+          });
+          return;
+        }
+        var html = parser.getHTML();
+        var result = {
+          message: html,
+          error: false
+        };
+        if (e.data.debug) {
+          result.measurement = parser.getMeasurements();
+        }
+        self.postMessage(result);
+        parser = null;
+      } catch (e) {
         self.postMessage({
-          message: parser.latestError,
+          message: e.message,
           error: true
         });
-        return;
       }
-      var html = parser.getHTML();
-      var result = {
-        message: html,
-        error: false
-      };
-      if (e.data.debug) {
-        result.measurement = parser.getMeasurements();
-      }
-      self.postMessage(result);
-      parser = null;
     };
     </script>
   </template>
@@ -524,6 +539,11 @@ Custom property | Description | Default
      *
      * @event action-link-change
      * @param {String} url The URL handled by this event.
+     */
+    /**
+     * Fired when web worker finished work and the data are displayed.
+     *
+     * @event json-viewer-parsed
      */
     properties: {
       /**
@@ -668,11 +688,16 @@ Custom property | Description | Default
         worker.addEventListener('error', this._workerErrorHandler);
         this._worker = worker;
       }
+      var debug = this.debug;
+      var ua = navigator.userAgent;
+      if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident') !== -1) {
+        debug = false; // performance API is not available in web workers in IE....
+      }
       this._worker.postMessage({
         json: json,
         raw: this.raw,
         cssPrefix: this.nodeName.toLowerCase() + ' style-scope ',
-        debug: this.debug
+        debug: debug
       });
     },
     // Called when worker data received.
@@ -691,17 +716,24 @@ Custom property | Description | Default
           console.table(data.measurement.items);
           console.groupEnd();
         }
-
       }
+      this.fire('json-viewer-parsed');
     },
     // Called when workr error received.
     _workerError: function() {
       this._setIsError(true);
       this._setWorking(false);
+      this.fire('json-viewer-parsed');
     },
     // Compute if output should be shown.
     _computeShowOutput: function(working, isError, json) {
-      return !working && !isError && (!!json && json !== null && json !== false);
+      if (working) {
+        return false;
+      }
+      if (isError) {
+        return true;
+      }
+      return !!json && json !== null && json !== false;
     },
     // Called when the user click on the display area. It will handle view toggle and links clicks.
     _handleDisplayClick: function(e) {

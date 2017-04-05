@@ -101,8 +101,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     scopeCa._saveFile = function() {
       setToast('Save to file called');
     };
-
-    getFromUrl('./example.json');
+    function init() {
+      getFromUrl('./example.json');
+    }
+    window.addEventListener('WebComponentsReady', init);
     </script>
   </div>
 </body>
