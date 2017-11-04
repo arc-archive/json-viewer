@@ -4,10 +4,8 @@
   "license": "Apache-2.0 OR CC-BY-4.0",
   "description": "A JSON payload viewer for the JSON response",
   "devDependencies": {
-    "polymer-cli": "^0.16.0"
-  },
-  "engines": {
-    "node": ">=0.10.0"
+    "bower": "^1.8.0",
+    "polymer-cli": "^1.2.0"
   },
   "private": false,
   "main": [
@@ -16,9 +14,9 @@
   "author": "The Advanced REST client authors <arc@mulesoft.com>",
   "scripts": {
     "serve": "node_modules/.bin/polymer serve",
-    "lint": "node_modules/.bin/polymer lint json-viewer.html",
+    "lint": "node_modules/.bin/polymer lint json-viewer.html js-max-number-error.html --rules polymer-1",
     "test-sauce": "node_modules/.bin/polymer test --plugin sauce --job-name \"json-viewer:local-test\"",
-    "test": "node_modules/.bin/polymer test",
+    "test": "node_modules/.bin/polymer test --plugin local",
     "deps": "npm install --quiet && bower install --quiet",
     "update-deps": "npm update --quiet && bower update --quiet"
   },
