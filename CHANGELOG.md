@@ -1,3 +1,18 @@
+<a name="0.1.8"></a>
+## [0.1.8](https://github.com/advanced-rest-client/json-viewer/compare/0.1.6...0.1.8) (2017-11-04)
+
+
+### Fix
+
+* Fixes #2 - CSS mixins syntax ([50e223b1c8a51873738c77d438e825118bffd78b](https://github.com/advanced-rest-client/json-viewer/commit/50e223b1c8a51873738c77d438e825118bffd78b)), closes [#2](https://github.com/advanced-rest-client/json-viewer/issues/2)
+* Fixes #3 missing import in bower dependencies ([3c89ea88c2aa5eb6cb9b60f0a63a23ca261235fe](https://github.com/advanced-rest-client/json-viewer/commit/3c89ea88c2aa5eb6cb9b60f0a63a23ca261235fe)), closes [#3](https://github.com/advanced-rest-client/json-viewer/issues/3)
+
+### Update
+
+* Updated tests configuration. ([57110532dca562305899e029600d67b34942e3bf](https://github.com/advanced-rest-client/json-viewer/commit/57110532dca562305899e029600d67b34942e3bf))
+
+
+
 <a name="0.1.7"></a>
 ## [0.1.7](https://github.com/advanced-rest-client/json-viewer/compare/0.1.6...v0.1.7) (2017-04-05)
 

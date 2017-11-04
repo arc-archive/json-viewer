@@ -72,6 +72,7 @@ Custom property | Description | Default
 `--code-type-text-value-color` | Color of the string value. | `#48A`
 `--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
 `--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
+`--json-viewer-node` | Mixin applied to a "node" | `{}`
 
 @group UI Elements
 @element json-viewer
@@ -87,7 +88,7 @@ Custom property | Description | Default
       color: black;
       cursor: text;
       -webkit-user-select: text;
-      @apply(--json-viewer);
+      @apply --json-viewer;
     }
 
     .prettyPrint {
@@ -127,6 +128,7 @@ Custom property | Description | Default
       white-space: nowrap;
       margin-bottom: 4px;
       word-wrap: break-word;
+      @apply --json-viewer-node;
     }
 
     .array-counter {
@@ -209,9 +211,9 @@ Custom property | Description | Default
     }
 
     .actions-panel {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      @apply(--response-raw-viewer-action-bar);
+      @apply --layout-horizontal;
+      @apply --layout-center;
+      @apply --response-raw-viewer-action-bar;
     }
 
     .actions-panel.hidden {
