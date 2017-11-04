@@ -56,6 +56,7 @@ Custom property | Description | Default
 `--code-type-text-value-color` | Color of the string value. | `#48A`
 `--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
 `--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
+`--json-viewer-node` | Mixin applied to a "node" | `{}`
 
 
 
