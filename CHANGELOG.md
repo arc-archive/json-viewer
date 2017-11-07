@@ -1,3 +1,9 @@
+<a name="0.1.10"></a>
+## [0.1.10](https://github.com/advanced-rest-client/json-viewer/compare/0.1.9...0.1.10) (2017-11-07)
+
+
+
+
 <a name="0.1.9"></a>
 ## [0.1.9](https://github.com/advanced-rest-client/json-viewer/compare/0.1.8...0.1.9) (2017-11-07)
 
