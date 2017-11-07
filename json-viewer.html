@@ -219,15 +219,21 @@ Custom property | Description | Default
     .actions-panel.hidden {
       display: none;
     }
+
+    [hidden] {
+      display: none !important;
+    }
     </style>
     <paper-spinner active="[[working]]"></paper-spinner>
-    <div class="error" hidden$="[[!isError]]">
-      <p>There was an error parsing JSON data</p>
-    </div>
+    <template is="dom-if" if="[[isError]]">
+      <div class="error">
+        <p>There was an error parsing JSON data</p>
+      </div>
+    </template>
     <div class$="[[_computeActionsPanelClass(showOutput)]]">
       <content select="[content-action]"></content>
     </div>
-    <output id="output" hidden$="[[!showOutput]]" on-tap="_handleDisplayClick"></output>
+    <output hidden$="[[!showOutput]]" on-tap="_handleDisplayClick"></output>
     <script id="jsonWorker" type="text/js-worker">
     var SafeHtmlUtils = {
       AMP_RE: new RegExp(/&/g),
@@ -618,7 +624,7 @@ Custom property | Description | Default
       _textSearch: {
         type: HTMLElement,
         value: function() {
-          return this.$.output;
+          return this.$$('output');
         }
       },
       /**
@@ -638,12 +644,7 @@ Custom property | Description | Default
     ],
 
     detached: function() {
-      if (this._worker) {
-        this._worker.removeEventListener('message', this._workerDataHandler);
-        this._worker.removeEventListener('error', this._workerErrorHandler);
-        this._worker = undefined;
-        // Created URL via URL.createObjectURL will be cleaned by the browser.
-      }
+      this._removeWorker();
     },
 
     ready: function() {
@@ -653,13 +654,43 @@ Custom property | Description | Default
       }
     },
 
+    _removeWorker: function() {
+      if (this._worker) {
+        this._worker.removeEventListener('message', this._workerDataHandler);
+        this._worker.removeEventListener('error', this._workerErrorHandler);
+        this._worker.terminate();
+        this._worker = undefined;
+        window.URL.revokeObjectURL(this._workerUrl);
+        this._workerUrl = undefined;
+      }
+    },
+
+    _clearOutput: function() {
+      var node = this.$$('output');
+      node.innerHTML = '';
+      // var main = node.childNodes[0];
+      // if (!main) {
+      //   return;
+      // }
+      // var children = main.childNodes;
+      // for (var i = children.length - 1; i <= 0; i--) {
+      //   main.removeChild(children[i]);
+      // }
+      // node.removeChild(main);
+    },
+
+    _writeOutput: function(text) {
+      var node = this.$$('output');
+      node.innerHTML = text;
+    },
+
     // Called when `json` property changed. It starts parsing the data.
     _changed: function(json) {
       if (!this._isReady) {
         return;
       }
       this._setIsError(false);
-      this.$.output.innerText = '';
+      this._clearOutput();
       if (json === undefined) {
         return;
       }
@@ -667,25 +698,27 @@ Custom property | Description | Default
       if (json === null) {
         html = '<div class="prettyPrint"><span class="nullValue">null';
         html += '</span></div>';
-        this.$.output.innerHTML = html;
-        this.$.output.removeAttribute('hidden');
+        this._writeOutput(html);
+        this._setShowOutput(true);
         return;
       }
 
       if (json === false) {
         html = '<div class="prettyPrint"><span class="booleanValue">false';
         html += '</span></div>';
-        this.$.output.innerHTML = html;
+        this._writeOutput(html);
         this._setShowOutput(true);
         return;
       }
-
       this._setWorking(true);
-      if (!this._worker) {
-        var blob = new Blob([this.$.jsonWorker.textContent], {
+      var worker = this._worker;
+      if (!worker) {
+        var script = this.$$('script[type="text/js-worker"]');
+        var blob = new Blob([script.textContent], {
           type: 'text/javascript'
         });
-        var worker = new Worker(window.URL.createObjectURL(blob));
+        this._workerUrl = window.URL.createObjectURL(blob);
+        worker = new Worker(this._workerUrl);
         worker.addEventListener('message', this._workerDataHandler);
         worker.addEventListener('error', this._workerErrorHandler);
         this._worker = worker;
@@ -695,7 +728,7 @@ Custom property | Description | Default
       if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident') !== -1) {
         debug = false; // performance API is not available in web workers in IE....
       }
-      this._worker.postMessage({
+      worker.postMessage({
         json: json,
         raw: this.raw,
         cssPrefix: this.nodeName.toLowerCase() + ' style-scope ',
@@ -707,12 +740,10 @@ Custom property | Description | Default
       var data = e.data;
       if (data.error) {
         this._setIsError(true);
-        this.$.output.innerHTML = data.message;
-      } else {
-        this.$.output.innerHTML = data.message;
       }
+      this._writeOutput(data.message);
       this._setWorking(false);
-      if (this.debug) {
+      if (this.debug && data.measurement) {
         if (data.measurement.items && data.measurement.items.length) {
           console.groupCollapsed('JSON viewer parse measurements');
           console.table(data.measurement.items);
