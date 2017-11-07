@@ -22,47 +22,47 @@ the License.
 <dom-module id="js-max-number-error">
   <template>
     <style>
-      :host {
-        display: inline-block;
-        vertical-align: text-bottom;
-      }
-      .parsed-value ::content > * {
-        color: #D32F2F;
-        font-weight: 500;
-      }
-      .content {
-        @apply --layout-horizontal;
-        @apply --layout-center;
-        color: #D32F2F;
-        font-weight: 500;
-        cursor: pointer;
-      }
+    :host {
+      display: inline-block;
+      vertical-align: text-bottom;
+    }
+    .parsed-value ::content > * {
+      color: #D32F2F;
+      font-weight: 500;
+    }
+    .content {
+      @apply --layout-horizontal;
+      @apply --layout-center;
+      color: #D32F2F;
+      font-weight: 500;
+      cursor: pointer;
+    }
 
-      iron-icon {
-        height: 18px;
-        width: 18px;
-        margin-right: 8px;
-      }
+    iron-icon {
+      height: 18px;
+      width: 18px;
+      margin-right: 8px;
+    }
 
-      #collapse {
-        white-space: initial;
-        @apply --paper-font-body2;
-        color: rgba(0, 0, 0, 0.74);
-      }
+    #collapse {
+      white-space: initial;
+      @apply --paper-font-body2;
+      color: rgba(0, 0, 0, 0.74);
+    }
 
-      p {
-        margin: 0;
-      }
+    p {
+      margin: 0;
+    }
 
-      .message {
-        padding: 12px;
-        background-color: #FFECB3;
-        margin: 12px 24px;
-      }
+    .message {
+      padding: 12px;
+      background-color: #FFECB3;
+      margin: 12px 24px;
+    }
 
-      .expected {
-        font-weight: 700;
-      }
+    .expected {
+      font-weight: 700;
+    }
     </style>
     <div class="content" on-tap="toggle">
       <iron-icon icon="arc:info"></iron-icon>
@@ -70,7 +70,7 @@ the License.
         <content></content>
       </div>
     </div>
-    <iron-collapse id="collapse">
+    <iron-collapse>
       <div class="message">
         <p>The number used in the response is unsafe in JavaScript environment and therefore as a JSON value.</p>
         <p>Original value for the number (represented as string) is <span class="expected">"[[expectedNumber]]"</span></p>
@@ -80,23 +80,19 @@ the License.
     </iron-collapse>
   </template>
   <script>
-  (function() {
-    'use strict';
-
-    Polymer({
-      is: 'js-max-number-error',
-      properties: {
-        // A number that is expected to be true.
-        expectedNumber: {
-          type: String,
-          value: '[unknown]'
-        }
-      },
-      // Toggles the collapse element.
-      toggle: function() {
-        this.$.collapse.toggle();
+  Polymer({
+    is: 'js-max-number-error',
+    properties: {
+      // A number that is expected to be true.
+      expectedNumber: {
+        type: String,
+        value: '[unknown]'
       }
-    });
-  })();
+    },
+    // Toggles the collapse element.
+    toggle: function() {
+      this.$$('iron-collapse').toggle();
+    }
+  });
   </script>
 </dom-module>
