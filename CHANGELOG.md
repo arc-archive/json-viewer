@@ -1,3 +1,13 @@
+<a name="0.1.9"></a>
+## [0.1.9](https://github.com/advanced-rest-client/json-viewer/compare/0.1.8...0.1.9) (2017-11-07)
+
+
+### Update
+
+* Updated the element for optimization. ([a76f0760c9e82f55a183bf822bc34cc1f3a7a615](https://github.com/advanced-rest-client/json-viewer/commit/a76f0760c9e82f55a183bf822bc34cc1f3a7a615))
+
+
+
 <a name="0.1.8"></a>
 ## [0.1.8](https://github.com/advanced-rest-client/json-viewer/compare/0.1.6...0.1.8) (2017-11-04)
 
