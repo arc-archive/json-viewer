@@ -1,3 +1,13 @@
+<a name="0.1.11"></a>
+## [0.1.11](https://github.com/advanced-rest-client/json-viewer/compare/0.1.10...0.1.11) (2018-02-06)
+
+
+### Update
+
+* Updating version of dev dependencies. ([89397e872a1a4d5ccebd658abd543da5f40b4247](https://github.com/advanced-rest-client/json-viewer/commit/89397e872a1a4d5ccebd658abd543da5f40b4247))
+
+
+
 <a name="0.1.10"></a>
 ## [0.1.10](https://github.com/advanced-rest-client/json-viewer/compare/0.1.9...0.1.10) (2017-11-07)
 

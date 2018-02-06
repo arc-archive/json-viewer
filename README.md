@@ -63,8 +63,8 @@ Custom property | Description | Default
 ### Events
 | Name | Description | Params |
 | --- | --- | --- |
-| action-link-change | Event called when the user click on the anchor in display area. | url **String** - The URL handled by this event. |
 | json-viewer-parsed | Fired when web worker finished work and the data are displayed. | __none__ |
+| url-change-action | Event called when the user click on the anchor in display area. | url **String** - The URL handled by this event. |
 # js-max-number-error
 
 
