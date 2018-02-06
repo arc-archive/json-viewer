@@ -776,6 +776,8 @@ Custom property | Description | Default
 
       if (e.target.nodeName === 'A') {
         e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
         this.fire('url-change-action', {
           url: e.target.getAttribute('href')
         });
