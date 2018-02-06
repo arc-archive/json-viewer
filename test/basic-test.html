@@ -68,9 +68,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(infos.length, 1);
       });
 
-      test('Should fire action-link-change event', function() {
+      test('Should fire url-change-action event', function() {
         var spy = sinon.stub();
-        element.addEventListener('action-link-change', spy);
+        element.addEventListener('url-change-action', spy);
         var link = output.querySelector('a[response-anchor]');
         MockInteractions.tap(link);
         assert.isTrue(spy.calledOnce);

@@ -545,7 +545,7 @@ Custom property | Description | Default
     /**
      * Event called when the user click on the anchor in display area.
      *
-     * @event action-link-change
+     * @event url-change-action
      * @param {String} url The URL handled by this event.
      */
     /**
@@ -776,7 +776,9 @@ Custom property | Description | Default
 
       if (e.target.nodeName === 'A') {
         e.preventDefault();
-        this.fire('action-link-change', {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        this.fire('url-change-action', {
           url: e.target.getAttribute('href')
         });
         return;
