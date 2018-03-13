@@ -11,7 +11,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 -->
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
@@ -67,7 +67,7 @@ the License.
     <div class="content" on-tap="toggle">
       <iron-icon icon="arc:info"></iron-icon>
       <div class="parsed-value">
-        <content></content>
+        <slot></slot>
       </div>
     </div>
     <iron-collapse>
@@ -80,19 +80,22 @@ the License.
     </iron-collapse>
   </template>
   <script>
-  Polymer({
-    is: 'js-max-number-error',
-    properties: {
-      // A number that is expected to be true.
-      expectedNumber: {
-        type: String,
-        value: '[unknown]'
-      }
-    },
-    // Toggles the collapse element.
-    toggle: function() {
-      this.$$('iron-collapse').toggle();
+  class JsMaxNumberError extends Polymer.Element {
+    static get is() { return 'js-max-number-error'; }
+    static get properties() {
+      return {
+        // A number that is expected to be true.
+        expectedNumber: {
+          type: String,
+          value: '[unknown]'
+        }
+      };
     }
-  });
+    // Toggles the collapse element.
+    toggle() {
+      this.shadowRoot.querySelector('iron-collapse').toggle();
+    }
+  }
+  window.customElements.define(JsMaxNumberError.is, JsMaxNumberError);
   </script>
 </dom-module>

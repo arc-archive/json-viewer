@@ -11,12 +11,10 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 -->
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../text-search-behavior/text-search-behavior.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../paper-spinner/paper-spinner.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="js-max-number-error.html">
-
 <!--
 `<json-viewer>` A JSON payload viewer for the JSON response.
 
@@ -231,7 +229,7 @@ Custom property | Description | Default
       </div>
     </template>
     <div class$="[[_computeActionsPanelClass(showOutput)]]">
-      <content select="[content-action]"></content>
+      <slot name="content-action"></slot>
     </div>
     <output hidden$="[[!showOutput]]" on-tap="_handleDisplayClick"></output>
     <script id="jsonWorker" type="text/js-worker">
@@ -540,152 +538,110 @@ Custom property | Description | Default
     </script>
   </template>
   <script>
-  Polymer({
-    is: 'json-viewer',
+  class JsonViewer extends Polymer.Element {
+    static get is() { return 'json-viewer'; }
+    static get properties() {
+      return {
+        /**
+         * JSON data to parse and display.
+         * It can be either JS object (already parsed string) or string value.
+         * If the passed object is a string then JSON.parse function will be
+         * used to parse string.
+         */
+        json: {
+          type: String,
+          observer: '_changed'
+        },
+        /**
+         * If it's possible, set this property to the JSON string.
+         * It will help to handle big numbers that are not parsed correctly by
+         * the JSON.parse function. The parser will try to locate the number
+         * in the source string and display it in the correct form.
+         *
+         * P.S.
+         * Calling JSON.stringify on a JS won't help here :) Must be source
+         * string.
+         */
+        raw: String,
+        /**
+         * True if error ocurred when parsing the `json` data.
+         * An error message will be displayed.
+         */
+        isError: {
+          type: Boolean,
+          readOnly: true,
+          value: false,
+          notify: true
+        },
+        /**
+         * True when JSON is beeing parsed.
+         */
+        working: {
+          type: Boolean,
+          readOnly: true,
+          value: false,
+          notify: true
+        },
+        /**
+         * True when output should be shown (JSON has been parsed without errors)
+         */
+        showOutput: {
+          type: Boolean,
+          readOnly: true,
+          value: false,
+          computed: '_computeShowOutput(working, isError, json)'
+        },
+        // A reference to the web worker object.
+        _worker: Object,
+        // If true then it prints the execution time to the console.
+        debug: Boolean
+      };
+    }
     /**
-     * Event called when the user click on the anchor in display area.
-     *
-     * @event url-change-action
-     * @param {String} url The URL handled by this event.
+     * @constructor
      */
-    /**
-     * Fired when web worker finished work and the data are displayed.
-     *
-     * @event json-viewer-parsed
-     */
-    properties: {
-      /**
-       * JSON data to parse and display.
-       * It can be either JS object (already parsed string) or string value.
-       * If the passed object is a string then JSON.parse function will be
-       * used to parse string.
-       */
-      json: {
-        type: String,
-        observer: '_changed'
-      },
-      /**
-       * If it's possible, set this property to the JSON string.
-       * It will help to handle big numbers that are not parsed correctly by
-       * the JSON.parse function. The parser will try to locate the number
-       * in the source string and display it in the correct form.
-       *
-       * P.S.
-       * Calling JSON.stringify on a JS won't help here :) Must be source
-       * string.
-       */
-      raw: String,
-      /**
-       * True if error ocurred when parsing the `json` data.
-       * An error message will be displayed.
-       */
-      isError: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        notify: true
-      },
-      /**
-       * True when JSON is beeing parsed.
-       */
-      working: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        notify: true
-      },
-      /**
-       * True when output should be shown (JSON has been parsed without errors)
-       */
-      showOutput: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        computed: '_computeShowOutput(working, isError, json)'
-      },
-      // A reference to the web worker object.
-      _worker: Object,
-      // function to be called when worker data are received
-      _workerDataHandler: {
-        type: Function,
-        value: function() {
-          return this._workerData.bind(this);
-        }
-      },
-      // function to be called when worker error data are received
-      _workerErrorHandler: {
-        type: Function,
-        value: function() {
-          return this._workerError.bind(this);
-        }
-      },
+    constructor() {
+      super();
+      this._workerError = this._workerError.bind(this);
+      this._workerData = this._workerData.bind(this);
+    }
 
-      // An element which should be used for text search.
-      _textSearch: {
-        type: HTMLElement,
-        value: function() {
-          return this.$$('output');
-        }
-      },
-      /**
-       * If set it will highlight each occurance of the query in the
-       * JSON viewer.
-       */
-      query: {
-        type: String,
-        observer: '_queryChanged'
-      },
-      // If true then it prints the execution time to the console.
-      debug: Boolean
-    },
-
-    behaviors: [
-      ArcBehaviors.TextSearchBehavior
-    ],
-
-    detached: function() {
+    detached() {
+      super.detached();
       this._removeWorker();
-    },
+    }
 
-    ready: function() {
+    ready() {
+      super.ready();
       this._isReady = true;
       if (this.json) {
         this._changed(this.json);
       }
-    },
+    }
 
-    _removeWorker: function() {
+    _removeWorker() {
       if (this._worker) {
-        this._worker.removeEventListener('message', this._workerDataHandler);
-        this._worker.removeEventListener('error', this._workerErrorHandler);
+        this._worker.removeEventListener('message', this._workerData);
+        this._worker.removeEventListener('error', this._workerError);
         this._worker.terminate();
         this._worker = undefined;
         window.URL.revokeObjectURL(this._workerUrl);
         this._workerUrl = undefined;
       }
-    },
+    }
 
-    _clearOutput: function() {
-      var node = this.$$('output');
+    _clearOutput() {
+      var node = this.shadowRoot.querySelector('output');
       node.innerHTML = '';
-      // var main = node.childNodes[0];
-      // if (!main) {
-      //   return;
-      // }
-      // var children = main.childNodes;
-      // for (var i = children.length - 1; i <= 0; i--) {
-      //   main.removeChild(children[i]);
-      // }
-      // node.removeChild(main);
-    },
+    }
 
-    _writeOutput: function(text) {
-      var node = this.$$('output');
+    _writeOutput(text) {
+      var node = this.shadowRoot.querySelector('output');
       node.innerHTML = text;
-    },
+    }
 
     // Called when `json` property changed. It starts parsing the data.
-    _changed: function(json) {
+    _changed(json) {
       if (!this._isReady) {
         return;
       }
@@ -713,14 +669,14 @@ Custom property | Description | Default
       this._setWorking(true);
       var worker = this._worker;
       if (!worker) {
-        var script = this.$$('script[type="text/js-worker"]');
+        var script = this.shadowRoot.querySelector('script[type="text/js-worker"]');
         var blob = new Blob([script.textContent], {
           type: 'text/javascript'
         });
         this._workerUrl = window.URL.createObjectURL(blob);
         worker = new Worker(this._workerUrl);
-        worker.addEventListener('message', this._workerDataHandler);
-        worker.addEventListener('error', this._workerErrorHandler);
+        worker.addEventListener('message', this._workerData);
+        worker.addEventListener('error', this._workerError);
         this._worker = worker;
       }
       var debug = this.debug;
@@ -734,9 +690,9 @@ Custom property | Description | Default
         cssPrefix: this.nodeName.toLowerCase() + ' style-scope ',
         debug: debug
       });
-    },
+    }
     // Called when worker data received.
-    _workerData: function(e) {
+    _workerData(e) {
       var data = e.data;
       if (data.error) {
         this._setIsError(true);
@@ -750,16 +706,16 @@ Custom property | Description | Default
           console.groupEnd();
         }
       }
-      this.fire('json-viewer-parsed');
-    },
+      this.dispatchEvent(new CustomEvent('json-viewer-parsed', {}));
+    }
     // Called when workr error received.
-    _workerError: function() {
+    _workerError() {
       this._setIsError(true);
       this._setWorking(false);
-      this.fire('json-viewer-parsed');
-    },
+      this.dispatchEvent(new CustomEvent('json-viewer-parsed', {}));
+    }
     // Compute if output should be shown.
-    _computeShowOutput: function(working, isError, json) {
+    _computeShowOutput(working, isError, json) {
       if (working) {
         return false;
       }
@@ -767,9 +723,9 @@ Custom property | Description | Default
         return true;
       }
       return !!json && json !== null && json !== false;
-    },
+    }
     // Called when the user click on the display area. It will handle view toggle and links clicks.
-    _handleDisplayClick: function(e) {
+    _handleDisplayClick(e) {
       if (!e.target) {
         return;
       }
@@ -778,9 +734,14 @@ Custom property | Description | Default
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        this.fire('url-change-action', {
-          url: e.target.getAttribute('href')
-        });
+        this.dispatchEvent(new CustomEvent('url-change-action', {
+          detail: {
+            url: e.target.getAttribute('href')
+          },
+          bubbles: true,
+          cancelable: true,
+          composed: true
+        }));
         return;
       }
       var toggleId = e.target.dataset.toggle;
@@ -798,22 +759,7 @@ Custom property | Description | Default
       } else {
         parent.dataset.expanded = 'true';
       }
-    },
-    /**
-     * Called automatically when the `query` property change.
-     * It highlights word occurence in the JSON viewer.
-     *
-     * This function is called automatically when the `query` property change.
-     *
-     * @param {String} query Current `query` value.
-     */
-    _queryChanged: function(query) {
-      if (!query) {
-        this.cleanMarked();
-        return;
-      }
-      this.mark(query);
-    },
+    }
     /**
      * Computes CSS class for the actions pane.
      *
@@ -821,13 +767,25 @@ Custom property | Description | Default
      * @return CSS class names for the panel depending on state of the
      * `showOutput`property.
      */
-    _computeActionsPanelClass: function(showOutput) {
+    _computeActionsPanelClass(showOutput) {
       var clazz = 'actions-panel';
       if (!showOutput) {
         clazz += ' hidden';
       }
       return clazz;
     }
-  });
+    /**
+     * Event called when the user click on the anchor in display area.
+     *
+     * @event url-change-action
+     * @param {String} url The URL handled by this event.
+     */
+    /**
+     * Fired when web worker finished work and the data are displayed.
+     *
+     * @event json-viewer-parsed
+     */
+  }
+  window.customElements.define(JsonViewer.is, JsonViewer);
   </script>
 </dom-module>
