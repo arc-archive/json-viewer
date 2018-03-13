@@ -15,7 +15,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../iron-test-helpers/test-helpers.js"></script>
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
     <link rel="import" href="../json-viewer.html">
   </head>
@@ -27,26 +26,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
-    <test-fixture id="ca">
+    <test-fixture id="empty">
       <template>
-        <json-viewer>
-          <paper-icon-button content-action></paper-icon-button>
-        </json-viewer>
+        <json-viewer></json-viewer>
       </template>
     </test-fixture>
 
+    <test-fixture id="ca">
+      <template>
+        <json-viewer>
+          <paper-icon-button slot="content-action"></paper-icon-button>
+        </json-viewer>
+      </template>
+    </test-fixture>
     <script>
-    /* global suite, test, fixture, assert, sinon, MockInteractions */
     suite('basic', function() {
       var element;
       var output;
 
       setup(function(done) {
         element = fixture('basic');
-        output = Polymer.dom(element.root).querySelector('output');
+        output = element.shadowRoot.querySelector('output');
         var finished = false;
-        element.addEventListener('json-viewer-parsed', function(e) {
-          if (!e.detail.value && !finished) {
+        element.addEventListener('json-viewer-parsed', function() {
+          if (!finished) {
             finished = true;
             done();
           }
@@ -68,32 +71,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(infos.length, 1);
       });
 
-      test('Should fire url-change-action event', function() {
-        var spy = sinon.stub();
-        element.addEventListener('url-change-action', spy);
-        var link = output.querySelector('a[response-anchor]');
-        MockInteractions.tap(link);
-        assert.isTrue(spy.calledOnce);
+      test('Shows output', () => {
+        assert.isTrue(element.showOutput);
       });
 
-      test('Should mark search phrase', function() {
-        element.query = 'test';
-        var marks = output.querySelectorAll('mark.arc-search-mark');
-        assert.equal(marks.length, 3);
+      // test('Should fire url-change-action event', function() {
+      //   var spy = sinon.stub();
+      //   element.addEventListener('url-change-action', spy);
+      //   var link = output.querySelector('a[response-anchor]');
+      //   MockInteractions.tap(link);
+      //   assert.isTrue(spy.calledOnce);
+      // });
+    });
+
+    suite('Empty state', () => {
+      let element;
+      setup(() => {
+        element = fixture('empty');
       });
 
+      test('Sets working state', () => {
+        element.json = '{"a": "b"}';
+        assert.isTrue(element.working);
+      });
+
+      test('Sets error state', (done) => {
+        element.json = '{"a": "b"';
+        element.addEventListener('json-viewer-parsed', function() {
+          assert.isTrue(element.isError);
+          done();
+        });
+      });
+
+      test('Do not show output when error', (done) => {
+        element.json = '{"a": "b"';
+        element.addEventListener('json-viewer-parsed', function() {
+          assert.isTrue(element.showOutput);
+          done();
+        });
+      });
     });
 
     suite('content actions', function() {
       var element;
-
       setup(function() {
         element = fixture('ca');
       });
 
       test('Should have distributed nodes', function() {
-        var buttons = element.queryAllEffectiveChildren('paper-icon-button');
-        assert.equal(buttons.length, 1);
+        const slot = element.shadowRoot.querySelector('slot');
+        const nodes = slot.assignedNodes();
+        assert.equal(nodes.length, 1);
       });
     });
     </script>
