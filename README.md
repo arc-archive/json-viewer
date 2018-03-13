@@ -1,6 +1,13 @@
-[![Build Status](https://travis-ci.org/advanced-rest-client/json-viewer.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/json-viewer)  
+[![Build Status](https://travis-ci.org/advanced-rest-client/json-viewer.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/json-viewer)
 
-# json-viewer
+## JsonViewer component
+Tag: `<json-viewer>`
+
+### Installation
+Using bower:
+```
+bower install --save advanced-rest-client/json-viewer
+```
 
 `<json-viewer>` A JSON payload viewer for the JSON response.
 
@@ -58,13 +65,51 @@ Custom property | Description | Default
 `--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
 `--json-viewer-node` | Mixin applied to a "node" | `{}`
 
+## API
+### Component properties (attributes)
+
+#### json
+- Type: `string`
+JSON data to parse and display.
+It can be either JS object (already parsed string) or string value.
+If the passed object is a string then JSON.parse function will be
+used to parse string.
+
+#### raw
+- Type: `string`
+If it's possible, set this property to the JSON string.
+It will help to handle big numbers that are not parsed correctly by
+the JSON.parse function. The parser will try to locate the number
+in the source string and display it in the correct form.
+
+P.S.
+Calling JSON.stringify on a JS won't help here :) Must be source
+string.
+
+#### isError
+- Type: `boolean`
+- Default: `false`
+- Read only property
+True if error ocurred when parsing the `json` data.
+An error message will be displayed.
+
+#### working
+- Type: `boolean`
+- Default: `false`
+- Read only property
+True when JSON is beeing parsed.
+
+#### showOutput
+- Type: `boolean`
+- Default: `false`
+- Read only property
+True when output should be shown (JSON has been parsed without errors)
+
+#### debug
+- Type: `boolean`
+If true then it prints the execution time to the console.
 
 
-### Events
-| Name | Description | Params |
-| --- | --- | --- |
-| json-viewer-parsed | Fired when web worker finished work and the data are displayed. | __none__ |
-| url-change-action | Event called when the user click on the anchor in display area. | url **String** - The URL handled by this event. |
-# js-max-number-error
+### Component methods
 
 
