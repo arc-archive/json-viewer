@@ -2,6 +2,7 @@
   "excludeFiles": [
     "tasks/*",
     "demo/*",
-    "test/*"
+    "test/*",
+    "index.html"
   ]
 }

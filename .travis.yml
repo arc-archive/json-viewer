@@ -3,7 +3,7 @@ node_js: stable
 sudo: required
 before_script:
 - npm install -g polymer-cli
-- polymer install --variants
+- polymer install
 addons:
   firefox: latest
   apt:

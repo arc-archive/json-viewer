@@ -1,7 +1,7 @@
 {
   "name": "json-viewer",
   "description": "A JSON payload viewer for the JSON response",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "license": "Apache-2.0",
   "authors": [
     "Pawel Psztyc",
