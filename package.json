@@ -1,11 +1,10 @@
 {
   "name": "@api-components/json-viewer",
-  "version": "2.0.1",
-  "license": "Apache-2.0 OR CC-BY-4.0",
+  "version": "2.0.2",
+  "license": "Apache-2.0",
   "description": "A JSON payload viewer for the JSON response",
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.1.1",
-    "bower": "^1.8.0"
+    "@polymer/gen-typescript-declarations": "^1.5.1"
   },
   "private": false,
   "main": [
