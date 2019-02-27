@@ -5,13 +5,18 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   json-viewer.html
+ *   json-viewer.js
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../paper-spinner/paper-spinner.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="js-max-number-error.d.ts" />
+
+// tslint:disable:variable-name Describing an API that's defined elsewhere.
+// tslint:disable:no-any describes the API as best we are able today
+
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
 /**
  * `<json-viewer>` A JSON payload viewer for the JSON response.
@@ -76,7 +81,7 @@
  * `--code-dimmed-punctuation-opacity` | Value of the opacity on the "dimmed" punctuation | `0.34`
  * `--code-background-color` | Background color of the code area | ``
  */
-declare class JsonViewer extends Polymer.Element {
+declare class JsonViewer extends PolymerElement {
 
   /**
    * JSON data to parse and display.
@@ -164,6 +169,9 @@ declare class JsonViewer extends Polymer.Element {
   _computeActionsPanelClass(showOutput: Boolean|null): String|null;
 }
 
-interface HTMLElementTagNameMap {
-  "json-viewer": JsonViewer;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "json-viewer": JsonViewer;
+  }
 }

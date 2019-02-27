@@ -5,16 +5,17 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   js-max-number-error.html
+ *   js-max-number-error.js
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../iron-icon/iron-icon.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
 
-declare class JsMaxNumberError extends Polymer.Element {
+// tslint:disable:variable-name Describing an API that's defined elsewhere.
+
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+
+declare class JsMaxNumberError extends PolymerElement {
 
   /**
    * A number that is expected to be true.
@@ -27,6 +28,9 @@ declare class JsMaxNumberError extends Polymer.Element {
   toggle(): void;
 }
 
-interface HTMLElementTagNameMap {
-  "js-max-number-error": JsMaxNumberError;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "js-max-number-error": JsMaxNumberError;
+  }
 }

@@ -1,22 +1,37 @@
 {
-  "name": "@api-components/json-viewer",
-  "version": "2.0.2",
+  "name": "@advanced-rest-client/json-viewer",
+  "version": "3.0.0-preview",
   "license": "Apache-2.0",
   "description": "A JSON payload viewer for the JSON response",
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.5.1"
+    "@advanced-rest-client/arc-icons": "^3.0.0-preview.1",
+    "@polymer/gen-typescript-declarations": "^1.6.1",
+    "@polymer/iron-component-page": "^4.0.0",
+    "@polymer/iron-demo-helpers": "^3.0.0",
+    "@polymer/iron-test-helpers": "^3.0.0",
+    "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-input": "^3.0.1",
+    "@polymer/paper-toast": "^3.0.1",
+    "@polymer/test-fixture": "^4.0.2",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.2.3",
+    "wct-mocha": "^1.0.0"
   },
   "private": false,
-  "main": [
-    "json-viewer.html"
-  ],
+  "main": "json-viewer.html",
   "author": "The Advanced REST client authors <arc@mulesoft.com>",
   "scripts": {
     "lint": "polymer lint json-viewer.html js-max-number-error.html",
     "test-sauce": "polymer test --plugin sauce --job-name \"json-viewer:local-test\"",
     "test": "polymer test --plugin local",
-    "update-types": "bower install && gen-typescript-declarations --deleteExisting --outDir ."
+    "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
   },
+  "contributors": [
+    "Pawel Psztyc",
+    "The Advanced REST client authors <arc@mulesoft.com>"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/advanced-rest-client/json-viewer.git"
@@ -24,5 +39,12 @@
   "bugs": {
     "url": "https://github.com/advanced-rest-client/json-viewer/issues",
     "email": "arc@mulesoft.com"
+  },
+  "dependencies": {
+    "@polymer/polymer": "^3.0.0",
+    "@polymer/paper-spinner": "^3.0.0",
+    "@polymer/iron-flex-layout": "^3.0.0",
+    "@polymer/iron-collapse": "^3.0.0",
+    "@polymer/iron-test-helpers": "^3.0.0"
   }
 }

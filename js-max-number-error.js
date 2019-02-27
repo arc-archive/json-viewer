@@ -1,4 +1,4 @@
-<!--
+/**
 @license
 Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -10,17 +10,17 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
--->
-<link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../iron-collapse/iron-collapse.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../arc-icons/arc-icons.html">
-<!--
+*/
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import '@polymer/iron-collapse/iron-collapse.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@advanced-rest-client/arc-icons/arc-icons.js';
 
--->
-<dom-module id="js-max-number-error">
-  <template>
+class JsMaxNumberError extends PolymerElement {
+  static get template() {
+    return html`
     <style>
     :host {
       display: inline-block;
@@ -78,24 +78,21 @@ the License.
         <p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER" target="_blank">Read more about numbers in JavaScript</a>.</p>
       </div>
     </iron-collapse>
-  </template>
-  <script>
-  class JsMaxNumberError extends Polymer.Element {
-    static get is() { return 'js-max-number-error'; }
-    static get properties() {
-      return {
-        // A number that is expected to be true.
-        expectedNumber: {
-          type: String,
-          value: '[unknown]'
-        }
-      };
-    }
-    // Toggles the collapse element.
-    toggle() {
-      this.shadowRoot.querySelector('iron-collapse').toggle();
-    }
+`;
   }
-  window.customElements.define(JsMaxNumberError.is, JsMaxNumberError);
-  </script>
-</dom-module>
+
+  static get properties() {
+    return {
+      // A number that is expected to be true.
+      expectedNumber: {
+        type: String,
+        value: '[unknown]'
+      }
+    };
+  }
+  // Toggles the collapse element.
+  toggle() {
+    this.shadowRoot.querySelector('iron-collapse').toggle();
+  }
+}
+window.customElements.define('js-max-number-error', JsMaxNumberError);
