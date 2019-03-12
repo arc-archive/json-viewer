@@ -32,22 +32,16 @@
         </json-viewer>
       </template>
     </test-fixture>
+
     <script type="module">
     import '../json-viewer.js';
     suite('basic', function() {
       let element;
       let output;
 
-      setup(function(done) {
+      setup(function() {
         element = fixture('basic');
         output = element.shadowRoot.querySelector('output');
-        let finished = false;
-        element.addEventListener('json-viewer-parsed', function() {
-          if (!finished) {
-            finished = true;
-            done();
-          }
-        });
       });
 
       test('Should have parsed HTML', function() {
@@ -68,14 +62,6 @@
       test('Shows output', () => {
         assert.isTrue(element.showOutput);
       });
-
-      // test('Should fire url-change-action event', function() {
-      //   var spy = sinon.stub();
-      //   element.addEventListener('url-change-action', spy);
-      //   var link = output.querySelector('a[response-anchor]');
-      //   MockInteractions.tap(link);
-      //   assert.isTrue(spy.calledOnce);
-      // });
     });
 
     suite('Empty state', () => {
@@ -84,25 +70,14 @@
         element = fixture('empty');
       });
 
-      test('Sets working state', () => {
-        element.json = '{"a": "b"}';
-        assert.isTrue(element.working);
+      test('Sets error state', () => {
+        element.json = '{"a": "b"';
+        assert.isTrue(element.isError);
       });
 
-      test('Sets error state', (done) => {
+      test('Do not show output when error', () => {
         element.json = '{"a": "b"';
-        element.addEventListener('json-viewer-parsed', function() {
-          assert.isTrue(element.isError);
-          done();
-        });
-      });
-
-      test('Do not show output when error', (done) => {
-        element.json = '{"a": "b"';
-        element.addEventListener('json-viewer-parsed', function() {
-          assert.isTrue(element.showOutput);
-          done();
-        });
+        assert.isTrue(element.showOutput);
       });
     });
 
