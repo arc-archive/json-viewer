@@ -10,6 +10,9 @@
     "@polymer/iron-demo-helpers": "^3.0.0",
     "@polymer/iron-test-helpers": "^3.0.0",
     "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-dropdown-menu": "^3.0.0",
+    "@polymer/paper-item": "^3.0.0",
+    "@polymer/paper-listbox": "^3.0.0",
     "@polymer/paper-input": "^3.0.1",
     "@polymer/paper-toast": "^3.0.1",
     "@polymer/test-fixture": "^4.0.2",
@@ -17,7 +20,8 @@
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "sinon": "^7.2.3",
-    "wct-mocha": "^1.0.0"
+    "wct-mocha": "^1.0.0",
+    "web-animations-js": "^2.3.1"
   },
   "private": false,
   "main": "json-viewer.html",

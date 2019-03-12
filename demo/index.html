@@ -8,6 +8,8 @@
   <title>json-viewer demo</title>
 
   <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../node_modules/web-animations-js/web-animations-next.min.js"></script>
+
   <script type="module" src="../../../@polymer/polymer/lib/elements/dom-bind.js"></script>
   <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
   <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
@@ -16,6 +18,9 @@
   <script type="module" src="../../../@polymer/paper-toast/paper-toast.js"></script>
   <script type="module" src="../../../@advanced-rest-client/arc-icons/arc-icons.js"></script>
   <script type="module" src="../../../@polymer/paper-button/paper-button.js"></script>
+  <script type="module" src="../../../@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
+  <script type="module" src="../../../@polymer/paper-listbox/paper-listbox.js"></script>
+  <script type="module" src="../../../@polymer/paper-item/paper-item.js"></script>
   <script type="module" src="../json-viewer.js"></script>
 
   <custom-style>
@@ -25,20 +30,37 @@
     }
     </style>
   </custom-style>
+
 </head>
 <body unresolved>
   <dom-bind id="demo">
-    <template is="dom-bind">
+    <template>
+      <paper-dropdown-menu label="Select JSON example">
+        <paper-listbox slot="dropdown-content" on-iron-select="fileSelected">
+          <paper-item data-example="./examples/drive.json">Google Drive files list</paper-item>
+          <paper-item data-example="./examples/drive-response.json">Google Drive list response</paper-item>
+          <paper-item data-example="./examples/example.json">Complex structure example</paper-item>
+          <paper-item data-example="./examples/example2.json">Complex structure example 2</paper-item>
+          <paper-item data-example="./examples/social-data-list.json">Social data list</paper-item>
+          <paper-item data-example="./examples/enrichment-candidates.json">enrichment candidates</paper-item>
+          <paper-item data-example="./examples/git-candidate-list.json">git candidate list</paper-item>
+          <paper-item data-example="./examples/linkedin-people.json">linkedin people</paper-item>
+          <paper-item data-example="./examples/trainedmodels.json">trainedmodels</paper-item>
+          <paper-item data-example="./examples/trainedmodels-model.json">trainedmodels &gt; model</paper-item>
+          <paper-item data-example="./examples/trainedmodels-model-analyze.json">trainedmodels &gt; model &gt; analyze</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+
       <div class="vertical-section-container centered">
         <h3>Content actions</h3>
-        <json-viewer json="[[example]]" debug="" on-url-change-action="_onLinkChange">
+        <json-viewer json="[[exampleJson]]" raw="[[exampleJson]]" debug on-url-change-action="_onLinkChange">
           <paper-icon-button slot="content-action" title="Copy content to clipboard" icon="arc:content-copy" on-tap="_copyToClipboard"></paper-icon-button>
           <paper-icon-button slot="content-action" title="See raw response" icon="arc:visibility" on-tap="_seeRaw"></paper-icon-button>
           <paper-button slot="content-action" on-tap="_saveFile">save to file</paper-button>
         </json-viewer>
         <h3>Live preview</h3>
         <paper-textarea label="Enter JSON value" value="{{json}}"></paper-textarea>
-        <json-viewer json="[[json]]" on-url-change-action="_onLinkChange"></json-viewer>
+        <json-viewer debug json="[[json]]" on-url-change-action="_onLinkChange"></json-viewer>
       </div>
     </template>
   </dom-bind>
@@ -55,15 +77,15 @@
     setToast(e.detail.url);
   };
 
-  function getFromUrl(url) {
-    fetch(url)
-    .then(function(response) {
-      return response.text();
-    })
-    .then(function(text) {
-      scope.example = text;
-    });
-  }
+  // function getFromUrl(url) {
+  //   fetch(url)
+  //   .then(function(response) {
+  //     return response.text();
+  //   })
+  //   .then(function(text) {
+  //     scope.example = text;
+  //   });
+  // }
   scope._copyToClipboard = function() {
     setToast('Copy to clipboad called');
   };
@@ -74,10 +96,42 @@
     setToast('Save to file called');
   };
 
-  function init() {
-    getFromUrl('./example.json');
-  }
-  window.addEventListener('WebComponentsReady', init);
+  // function init() {
+  //   getFromUrl('./example.json');
+  // }
+
+  scope.addToast = function(text) {
+    const toast = document.createElement('paper-toast');
+    toast.text = text;
+    toast.opened = true;
+    document.body.appendChild(toast);
+  };
+
+  scope.fileSelected = function(e) {
+    const file = e.detail.item.dataset.example;
+    if (file) {
+      scope.getJson(file);
+    }
+  };
+
+  scope.getJson = function(url) {
+    fetch(url)
+    .then(function(response) {
+      if (response.ok) {
+        return response.text();
+      } else {
+        scope.addToast('Unable to download JSON data.');
+        return Promise.resolve();
+      }
+    })
+    .then(function(json) {
+      scope.exampleJson = json; // can be undefined.
+    })
+    .catch(function(cause) {
+      scope.addToast(cause.message);
+    });
+  };
+  // window.addEventListener('WebComponentsReady', init);
   </script>
 </body>
 
