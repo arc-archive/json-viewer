@@ -18,6 +18,8 @@ import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
+import {JsonParser} from './json-parser.js';
+
 /**
  * `<json-viewer>` A JSON payload viewer for the JSON response.
  *
@@ -120,17 +122,10 @@ declare class JsonViewer extends PolymerElement {
   readonly showOutput: boolean|null|undefined;
 
   /**
-   * A reference to the web worker object.
-   */
-  _worker: object|null|undefined;
-
-  /**
    * If true then it prints the execution time to the console.
    */
   debug: boolean|null|undefined;
-  ready(): void;
-  detached(): void;
-  _removeWorker(): void;
+  connectedCallback(): void;
   _clearOutput(): void;
   _writeOutput(text: any): void;
 
@@ -138,16 +133,14 @@ declare class JsonViewer extends PolymerElement {
    * Called when `json` property changed. It starts parsing the data.
    */
   _changed(json: any): void;
-
-  /**
-   * Called when worker data received.
-   */
-  _workerData(e: any): void;
+  _printPrimitiveValue(value: any, klas: any): void;
+  _dumpMeasurements(measurements: any): void;
+  _reportResult(html: any): void;
 
   /**
    * Called when workr error received.
    */
-  _workerError(): void;
+  _reportError(cause: any): void;
 
   /**
    * Compute if output should be shown.
