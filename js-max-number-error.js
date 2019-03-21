@@ -11,13 +11,12 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/iron-collapse/iron-collapse.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@advanced-rest-client/arc-icons/arc-icons.js';
-
+import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
+import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
+import '../../@polymer/iron-collapse/iron-collapse.js';
+import '../../@polymer/iron-icon/iron-icon.js';
+import '../../@advanced-rest-client/arc-icons/arc-icons.js';
+/* eslint-disable max-len */
 class JsMaxNumberError extends PolymerElement {
   static get template() {
     return html`
@@ -26,13 +25,25 @@ class JsMaxNumberError extends PolymerElement {
       display: inline-block;
       vertical-align: text-bottom;
     }
+
     .parsed-value ::slot > * {
       color: #D32F2F;
       font-weight: 500;
     }
+
     .content {
-      @apply --layout-horizontal;
-      @apply --layout-center;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+
       color: #D32F2F;
       font-weight: 500;
       cursor: pointer;

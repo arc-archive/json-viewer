@@ -28,7 +28,6 @@ export class JsonParser {
   constructor(opts) {
     this.rawData = opts.raw || '';
     this.cssPrefix = opts.cssPrefix || '';
-    this.debug = opts.debug || false;
     this._numberIndexes = {}; // Regexp number indexes
     this.jsonValue = null;
     this.latestError = null;
@@ -51,57 +50,14 @@ export class JsonParser {
       this.jsonValue = jsonData;
     }
   }
-
-  /**
-   * Uses the performance API to mark an event.
-   * @param {String} title
-   */
-  mark(title) {
-    if (!this.debug || !this.hasPerformanceApi) {
-      return;
-    }
-    performance.mark(title);
-  }
-  /**
-   * Creates a list of measurements performed during the HTML generation.
-   * @return {Object}
-   */
-  getMeasurements() {
-    if (!this.debug || !this.hasPerformanceApi) {
-      return;
-    }
-    performance.measure('get-html', 'get-html-start', 'get-html-end');
-    const items = performance.getEntriesByType('mark');
-    items.forEach(function(mark) {
-      if (~mark.name.indexOf('parse-start-')) {
-        const id = mark.name.substr(12);
-        performance.measure('parse-' + id, 'parse-start-' + id, 'parse-start-' + id);
-      }
-    });
-    let measuers = performance.getEntriesByType('measure');
-    const result = measuers.map(function(measure) {
-      return {
-        duration: measure.duration,
-        name: measure.name,
-        startTime: measure.startTime
-      };
-    });
-    performance.clearMarks();
-    performance.clearMeasures();
-    return {
-      items: result
-    };
-  }
   /**
    * Get created HTML content.
    * @return {String}
    */
   getHTML() {
-    this.mark('get-html-start');
     let parsedData = '<div class="' + this.cssPrefix + 'prettyPrint">';
     parsedData += this.parse(this.jsonValue);
     parsedData += '</div>';
-    this.mark('get-html-end');
     return parsedData;
   }
   /**
@@ -112,9 +68,6 @@ export class JsonParser {
    */
   parse(data, opts) {
     opts = opts || {};
-    this.__parseCallCounter = this.__parseCallCounter || 0;
-    this.__parseCallCounter++;
-    this.mark('parse-start-' + this.__parseCallCounter);
     let result = '';
     if (data === null) {
       result += this.parseNullValue();
@@ -132,7 +85,6 @@ export class JsonParser {
     if (opts.hasNextSibling && !opts.holdComa) {
       result += '<span class="' + this.cssPrefix + 'punctuation dimmed">,</span>';
     }
-    this.mark('parse-end-' + this.__parseCallCounter);
     return result;
   }
 

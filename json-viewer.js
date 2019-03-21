@@ -11,11 +11,9 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
+import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
+import '../../@polymer/paper-spinner/paper-spinner.js';
 import './js-max-number-error.js';
 import {JsonParser} from './json-parser.js';
 /**
@@ -91,13 +89,12 @@ class JsonViewer extends PolymerElement {
     <style>
     :host {
       display: block;
-      font-family: monospace;
-      font-size: 10pt;
+      font-family: var(--arc-font-code-family, monospace);
+      font-size: var(--arc-font-code-font-size, 10pt);
       color: black;
       cursor: text;
       -webkit-user-select: text;
-      @apply --arc-font-code1;
-      @apply --json-viewer;
+      user-select: text;
     }
 
     .prettyPrint {
@@ -137,7 +134,6 @@ class JsonViewer extends PolymerElement {
       white-space: nowrap;
       margin-bottom: 4px;
       word-wrap: break-word;
-      @apply --json-viewer-node;
     }
 
     .array-counter {
@@ -220,9 +216,17 @@ class JsonViewer extends PolymerElement {
     }
 
     .actions-panel {
-      @apply --layout-horizontal;
-      @apply --layout-center;
-      @apply --response-raw-viewer-action-bar;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
     }
 
     .actions-panel.hidden {
@@ -297,12 +301,9 @@ class JsonViewer extends PolymerElement {
        */
       showOutput: {
         type: Boolean,
-        readOnly: true,
         value: false,
         computed: '_computeShowOutput(working, isError, json)'
-      },
-      // If true then it prints the execution time to the console.
-      debug: Boolean
+      }
     };
   }
 
@@ -334,6 +335,7 @@ class JsonViewer extends PolymerElement {
     if (json === undefined) {
       return;
     }
+    this._setWorking(true);
     if (json === null) {
       this._printPrimitiveValue('null', 'nullValue');
       return;
@@ -342,24 +344,17 @@ class JsonViewer extends PolymerElement {
       this._printPrimitiveValue(String(json), 'booleanValue');
       return;
     }
-    this._setWorking(true);
-
     try {
       const parser = new JsonParser({
         json,
         raw: this.raw,
-        cssPrefix: this.nodeName.toLowerCase() + ' style-scope ',
-        debug: this.debug
+        cssPrefix: this.nodeName.toLowerCase() + ' style-scope '
       });
       if (parser.latestError !== null) {
         throw new Error(parser.latestError);
       }
       const html = parser.getHTML();
       this._reportResult(html);
-      if (this.debug) {
-        const measurement = parser.getMeasurements();
-        this._dumpMeasurements(measurement);
-      }
     } catch (cause) {
       this._reportError(cause);
     }
@@ -368,18 +363,7 @@ class JsonViewer extends PolymerElement {
   _printPrimitiveValue(value, klas) {
     const html = `<div class="prettyPrint"><span class="${klas}">${value}</span></div>`;
     this._writeOutput(html);
-    this._setShowOutput(true);
-  }
-
-  _dumpMeasurements(measurements) {
-    if (!this.debug || !measurements) {
-      return;
-    }
-    if (measurements.items && measurements.items.length) {
-      console.groupCollapsed('JSON viewer parse measurements');
-      console.table(measurements.items);
-      console.groupEnd();
-    }
+    this._setWorking(false);
   }
 
   _reportResult(html) {
@@ -405,7 +389,7 @@ class JsonViewer extends PolymerElement {
     if (isError) {
       return true;
     }
-    return !!json && json !== null && json !== false;
+    return typeof json !== 'undefined';
   }
   // Called when the user click on the display area. It will handle view toggle and links clicks.
   _handleDisplayClick(e) {
@@ -418,23 +402,19 @@ class JsonViewer extends PolymerElement {
       e.stopPropagation();
       e.stopImmediatePropagation();
       const newEntity = e.ctrlKey || e.metaKey;
-      this.dispatchEvent(new CustomEvent('url-change-action', {
-        detail: {
-          url: e.target.getAttribute('href'),
-          asNew: newEntity
-        },
-        bubbles: true,
-        cancelable: true,
-        composed: true
-      }));
+      const url = e.target.getAttribute('href');
+      if (newEntity) {
+        this._dispatchNewRequest(url);
+      } else {
+        this._dispatchChangeUrl(url);
+      }
       return;
     }
     const toggleId = e.target.dataset.toggle;
     if (!toggleId) {
       return;
     }
-    const parent = dom(this.root)
-      .querySelector('div[data-element="' + toggleId + '"]');
+    const parent = this.shadowRoot.querySelector('div[data-element="' + toggleId + '"]');
     if (!parent) {
       return;
     }
@@ -444,6 +424,29 @@ class JsonViewer extends PolymerElement {
     } else {
       parent.dataset.expanded = 'true';
     }
+  }
+
+  _dispatchChangeUrl(url) {
+    this.dispatchEvent(new CustomEvent('url-change-action', {
+      detail: {
+        url
+      },
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    }));
+  }
+
+  _dispatchNewRequest(url) {
+    this.dispatchEvent(new CustomEvent('request-workspace-append', {
+      detail: {
+        kind: 'ARC#Request',
+        request: {url}
+      },
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    }));
   }
   /**
    * Computes CSS class for the actions pane.
