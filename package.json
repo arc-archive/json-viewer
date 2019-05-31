@@ -27,7 +27,7 @@
   "main": "json-viewer.html",
   "author": "The Advanced REST client authors <arc@mulesoft.com>",
   "scripts": {
-    "lint": "polymer lint json-viewer.html js-max-number-error.html",
+    "lint": "polymer lint json-viewer.js js-max-number-error.js",
     "test-sauce": "polymer test --plugin sauce --job-name \"json-viewer:local-test\"",
     "test": "polymer test --plugin local",
     "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
