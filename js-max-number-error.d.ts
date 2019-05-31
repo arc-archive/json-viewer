@@ -11,10 +11,9 @@
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-
+/**
+ * eslint-disable max-len
+ */
 declare class JsMaxNumberError extends PolymerElement {
 
   /**
@@ -34,3 +33,5 @@ declare global {
     "js-max-number-error": JsMaxNumberError;
   }
 }
+
+export {};

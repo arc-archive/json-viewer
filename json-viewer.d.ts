@@ -12,12 +12,6 @@
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
-
 import {JsonParser} from './json-parser.js';
 
 /**
@@ -120,11 +114,6 @@ declare class JsonViewer extends PolymerElement {
    * True when output should be shown (JSON has been parsed without errors)
    */
   readonly showOutput: boolean|null|undefined;
-
-  /**
-   * If true then it prints the execution time to the console.
-   */
-  debug: boolean|null|undefined;
   connectedCallback(): void;
   _clearOutput(): void;
   _writeOutput(text: any): void;
@@ -134,7 +123,6 @@ declare class JsonViewer extends PolymerElement {
    */
   _changed(json: any): void;
   _printPrimitiveValue(value: any, klas: any): void;
-  _dumpMeasurements(measurements: any): void;
   _reportResult(html: any): void;
 
   /**
@@ -151,6 +139,8 @@ declare class JsonViewer extends PolymerElement {
    * Called when the user click on the display area. It will handle view toggle and links clicks.
    */
   _handleDisplayClick(e: any): void;
+  _dispatchChangeUrl(url: any): void;
+  _dispatchNewRequest(url: any): void;
 
   /**
    * Computes CSS class for the actions pane.

@@ -19,16 +19,6 @@ declare class JsonParser {
   _setJson(jsonData: any): void;
 
   /**
-   * Uses the performance API to mark an event.
-   */
-  mark(title: String|null): void;
-
-  /**
-   * Creates a list of measurements performed during the HTML generation.
-   */
-  getMeasurements(): object|null;
-
-  /**
    * Get created HTML content.
    */
   getHTML(): String|null;
