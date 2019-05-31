@@ -135,3 +135,12 @@
 
 
 
+# [3.0.0](https://github.com/advanced-rest-client/json-viewer/compare/1.0.0...3.0.0) (2019-05-31)
+
+
+### Fix
+
+* Fixing linter error that failed tests ([818a452ce9859b0b11a517287b67b4a72092c353](https://github.com/advanced-rest-client/json-viewer/commit/818a452ce9859b0b11a517287b67b4a72092c353))
+
+
+
