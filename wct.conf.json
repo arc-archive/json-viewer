@@ -4,8 +4,7 @@
     "local": {
       "disabled": true,
       "browsers": [
-        "chrome",
-        "firefox"
+        "chrome"
       ]
     },
     "sauce": {
@@ -35,11 +34,6 @@
           "browserName": "chrome",
           "platform": "Windows 10",
           "version": "latest"
-        },
-        {
-          "browserName": "safari",
-          "platform": "OS X 10.11",
-          "version": "9.0"
         },
         {
           "browserName": "safari",
