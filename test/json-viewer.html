@@ -1,0 +1,313 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/@polymer/test-fixture/test-fixture.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <json-viewer json='{"test": "test", "numeric": 1234567, "boolean": true, "nullable": null, "array": ["test", 123456], "object": {"sub-property": "value"}, "long": 12345678901112131415, "link": "http://domain.com", "relativeLink": "/path/to/resource.html"}'></json-viewer>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="empty">
+      <template>
+        <json-viewer></json-viewer>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="ca">
+      <template>
+        <json-viewer>
+          <paper-icon-button slot="content-action"></paper-icon-button>
+        </json-viewer>
+      </template>
+    </test-fixture>
+
+    <script type="module">
+    import '../json-viewer.js';
+    import sinon from '../node_modules/sinon/pkg/sinon-esm.js';
+
+    suite('basic', function() {
+      let element;
+      let output;
+
+      setup(function() {
+        element = fixture('basic');
+        output = element.shadowRoot.querySelector('output');
+      });
+
+      test('Should have parsed HTML', function() {
+        let html = output.innerHTML;
+        assert.isString(html);
+      });
+
+      test('Should have two links', function() {
+        let links = output.querySelectorAll('a[response-anchor]');
+        assert.equal(links.length, 2);
+      });
+
+      test('Should have one js-max-number-error', function() {
+        let infos = output.querySelectorAll('js-max-number-error');
+        assert.equal(infos.length, 1);
+      });
+
+      test('Shows output', () => {
+        assert.isTrue(element.showOutput);
+      });
+    });
+
+    suite('Empty state', () => {
+      let element;
+      setup(() => {
+        element = fixture('empty');
+      });
+
+      test('Sets error state', () => {
+        element.json = '{"a": "b"';
+        assert.isTrue(element.isError);
+      });
+
+      test('Do not show output when error', () => {
+        element.json = '{"a": "b"';
+        assert.isTrue(element.showOutput);
+      });
+    });
+
+    suite('content actions', function() {
+      let element;
+      setup(function() {
+        element = fixture('ca');
+      });
+
+      test('Should have distributed nodes', function() {
+        const slot = element.shadowRoot.querySelector('slot');
+        const nodes = slot.assignedNodes();
+        assert.equal(nodes.length, 1);
+      });
+    });
+
+    suite('_changed()', () => {
+      let element;
+      setup(() => {
+        element = fixture('empty');
+      });
+
+      test('Does nothing when value undefined', () => {
+        element._changed();
+        assert.isFalse(element.working);
+      });
+
+      test('Calls _printPrimitiveValue() when null', () => {
+        const spy = sinon.spy(element, '_printPrimitiveValue');
+        element._changed(null);
+        assert.equal(spy.args[0][0], 'null');
+        assert.equal(spy.args[0][1], 'nullValue');
+      });
+
+      test('Calls _printPrimitiveValue() when false', () => {
+        const spy = sinon.spy(element, '_printPrimitiveValue');
+        element._changed(false);
+        assert.equal(spy.args[0][0], 'false');
+        assert.equal(spy.args[0][1], 'booleanValue');
+      });
+
+      test('Calls _printPrimitiveValue() when true', () => {
+        const spy = sinon.spy(element, '_printPrimitiveValue');
+        element._changed(true);
+        assert.equal(spy.args[0][0], 'true');
+        assert.equal(spy.args[0][1], 'booleanValue');
+      });
+    });
+
+    suite('_dispatchChangeUrl()', () => {
+      const url = 'test-url';
+      let element;
+      setup(() => {
+        element = fixture('empty');
+      });
+
+      test('Dispatches url-change-action event', () => {
+        const spy = sinon.spy();
+        element.addEventListener('url-change-action', spy);
+        element._dispatchChangeUrl(url);
+        assert.isTrue(spy.called);
+      });
+
+      test('URL is set', () => {
+        const spy = sinon.spy();
+        element.addEventListener('url-change-action', spy);
+        element._dispatchChangeUrl(url);
+        assert.equal(spy.args[0][0].detail.url, url);
+      });
+
+      test('Event bubbles', () => {
+        const spy = sinon.spy();
+        element.addEventListener('url-change-action', spy);
+        element._dispatchChangeUrl(url);
+        assert.isTrue(spy.args[0][0].bubbles);
+      });
+    });
+
+    suite('_dispatchNewRequest()', () => {
+      const url = 'test-url';
+      let element;
+      setup(() => {
+        element = fixture('empty');
+      });
+
+      test('Dispatches request-workspace-append event', () => {
+        const spy = sinon.spy();
+        element.addEventListener('request-workspace-append', spy);
+        element._dispatchNewRequest(url);
+        assert.isTrue(spy.called);
+      });
+
+      test('Request is set', () => {
+        const spy = sinon.spy();
+        element.addEventListener('request-workspace-append', spy);
+        element._dispatchNewRequest(url);
+        assert.deepEqual(spy.args[0][0].detail.request, {url});
+      });
+
+      test('Kind is set', () => {
+        const spy = sinon.spy();
+        element.addEventListener('request-workspace-append', spy);
+        element._dispatchNewRequest(url);
+        assert.equal(spy.args[0][0].detail.kind, 'ARC#Request');
+      });
+
+      test('Event bubbles', () => {
+        const spy = sinon.spy();
+        element.addEventListener('request-workspace-append', spy);
+        element._dispatchNewRequest(url);
+        assert.isTrue(spy.args[0][0].bubbles);
+      });
+    });
+
+    suite('_handleDisplayClick()', () => {
+      let element;
+      setup(() => {
+        element = fixture('empty');
+      });
+
+      test('Does nothing when no target', () => {
+        element._handleDisplayClick({});
+        // no error, coverage
+      });
+
+      test('Does nothing when target has no data-toggle', () => {
+        element._handleDisplayClick({
+          target: document.createElement('span')
+        });
+        // no error, coverage
+      });
+
+      test('Does nothing when data-toggle reference does not exists', () => {
+        const node = document.createElement('span');
+        node.dataset.toggle = 'unknown-id';
+        element._handleDisplayClick({
+          target: node
+        });
+        // no error, coverage
+      });
+
+      test('Prevents default on anchor', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        let called = false;
+        const e = {
+          target: node,
+          preventDefault: () => called = true,
+          stopPropagation: () => {},
+          stopImmediatePropagation: () => {}
+        };
+        element._handleDisplayClick(e);
+        assert.isTrue(called);
+      });
+
+      test('Stops propagation on anchor', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        let called = false;
+        const e = {
+          target: node,
+          preventDefault: () => {},
+          stopPropagation: () => called = true,
+          stopImmediatePropagation: () => {}
+        };
+        element._handleDisplayClick(e);
+        assert.isTrue(called);
+      });
+
+      test('Stops immediate propagation on anchor', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        let called = false;
+        const e = {
+          target: node,
+          preventDefault: () => {},
+          stopPropagation: () => {},
+          stopImmediatePropagation: () => called = true
+        };
+        element._handleDisplayClick(e);
+        assert.isTrue(called);
+      });
+
+      test('Calls _dispatchChangeUrl()', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        const e = {
+          target: node,
+          preventDefault: () => {},
+          stopPropagation: () => {},
+          stopImmediatePropagation: () => {}
+        };
+        const spy = sinon.spy(element, '_dispatchChangeUrl');
+        element._handleDisplayClick(e);
+        assert.isTrue(spy.called);
+      });
+
+      test('Calls _dispatchNewRequest() for ctrlKey', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        const e = {
+          target: node,
+          preventDefault: () => {},
+          stopPropagation: () => {},
+          stopImmediatePropagation: () => {},
+          ctrlKey: true
+        };
+        const spy = sinon.spy(element, '_dispatchNewRequest');
+        element._handleDisplayClick(e);
+        assert.isTrue(spy.called);
+      });
+
+      test('Calls _dispatchNewRequest() for metaKey', () => {
+        const node = document.createElement('a');
+        node.href = '/test';
+        const e = {
+          target: node,
+          preventDefault: () => {},
+          stopPropagation: () => {},
+          stopImmediatePropagation: () => {},
+          metaKey: true
+        };
+        const spy = sinon.spy(element, '_dispatchNewRequest');
+        element._handleDisplayClick(e);
+        assert.isTrue(spy.called);
+      });
+    });
+    </script>
+
+  </body>
+</html>

@@ -5,13 +5,14 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   json-viewer.html
+ *   json-viewer.js
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../paper-spinner/paper-spinner.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="js-max-number-error.d.ts" />
+
+// tslint:disable:variable-name Describing an API that's defined elsewhere.
+// tslint:disable:no-any describes the API as best we are able today
+
+import {JsonParser} from './json-parser.js';
 
 /**
  * `<json-viewer>` A JSON payload viewer for the JSON response.
@@ -76,7 +77,7 @@
  * `--code-dimmed-punctuation-opacity` | Value of the opacity on the "dimmed" punctuation | `0.34`
  * `--code-background-color` | Background color of the code area | ``
  */
-declare class JsonViewer extends Polymer.Element {
+declare class JsonViewer extends PolymerElement {
 
   /**
    * JSON data to parse and display.
@@ -113,19 +114,7 @@ declare class JsonViewer extends Polymer.Element {
    * True when output should be shown (JSON has been parsed without errors)
    */
   readonly showOutput: boolean|null|undefined;
-
-  /**
-   * A reference to the web worker object.
-   */
-  _worker: object|null|undefined;
-
-  /**
-   * If true then it prints the execution time to the console.
-   */
-  debug: boolean|null|undefined;
-  ready(): void;
-  detached(): void;
-  _removeWorker(): void;
+  connectedCallback(): void;
   _clearOutput(): void;
   _writeOutput(text: any): void;
 
@@ -133,16 +122,13 @@ declare class JsonViewer extends Polymer.Element {
    * Called when `json` property changed. It starts parsing the data.
    */
   _changed(json: any): void;
-
-  /**
-   * Called when worker data received.
-   */
-  _workerData(e: any): void;
+  _printPrimitiveValue(value: any, klas: any): void;
+  _reportResult(html: any): void;
 
   /**
    * Called when workr error received.
    */
-  _workerError(): void;
+  _reportError(cause: any): void;
 
   /**
    * Compute if output should be shown.
@@ -153,6 +139,8 @@ declare class JsonViewer extends Polymer.Element {
    * Called when the user click on the display area. It will handle view toggle and links clicks.
    */
   _handleDisplayClick(e: any): void;
+  _dispatchChangeUrl(url: any): void;
+  _dispatchNewRequest(url: any): void;
 
   /**
    * Computes CSS class for the actions pane.
@@ -164,6 +152,9 @@ declare class JsonViewer extends Polymer.Element {
   _computeActionsPanelClass(showOutput: Boolean|null): String|null;
 }
 
-interface HTMLElementTagNameMap {
-  "json-viewer": JsonViewer;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "json-viewer": JsonViewer;
+  }
 }
