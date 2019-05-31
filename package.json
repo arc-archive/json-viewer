@@ -1,6 +1,6 @@
 {
   "name": "@advanced-rest-client/json-viewer",
-  "version": "3.0.0-preview.2",
+  "version": "3.0.0",
   "license": "Apache-2.0",
   "description": "A JSON payload viewer for the JSON response",
   "devDependencies": {
