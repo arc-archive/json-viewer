@@ -144,3 +144,7 @@
 
 
 
+# [3.1.0](https://github.com/advanced-rest-client/json-viewer/compare/1.0.0...3.1.0) (2019-07-30)
+
+
+
