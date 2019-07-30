@@ -120,7 +120,7 @@ export class JsonParser {
     result += '<span class="' + this.cssPrefix + 'numeric">';
     if (expectedNumber) {
       result += '<js-max-number-error class="' + this.cssPrefix +
-        'number-error" expected-number="' + expectedNumber + '">';
+        'number-error" expectednumber="' + expectedNumber + '">';
     }
     result += number + '';
     if (expectedNumber) {

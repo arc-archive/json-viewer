@@ -12,6 +12,8 @@
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
+import {LitElement, html, css} from 'lit-element';
+
 import {JsonParser} from './json-parser.js';
 
 /**
@@ -70,14 +72,27 @@ import {JsonParser} from './json-parser.js';
  * `--code-type-boolean-value-color` | Color of the boolean value | `#708`
  * `--code-punctuation-value-color` | Punctuation color. | `black`
  * `--code-type-number-value-color` | Color of the numeric value | `blue`
- * `--code-type-text-value-color` | Color of the string value. | `#48A`
+ * `--code-type-text-value-color` | Color of the string value. | `#295469`
  * `--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
  * `--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
  * `--json-viewer-node` | Mixin applied to a "node" | `{}`
  * `--code-dimmed-punctuation-opacity` | Value of the opacity on the "dimmed" punctuation | `0.34`
  * `--code-background-color` | Background color of the code area | ``
  */
-declare class JsonViewer extends PolymerElement {
+declare class JsonViewer extends LitElement {
+  readonly isError: any;
+
+  /**
+   * True if error ocurred when parsing the `json` data.
+   * An error message will be displayed.
+   */
+  _isError: boolean|null|undefined;
+  readonly working: any;
+
+  /**
+   * True when JSON is beeing parsed.
+   */
+  _working: boolean|null|undefined;
 
   /**
    * JSON data to parse and display.
@@ -98,23 +113,9 @@ declare class JsonViewer extends PolymerElement {
    * string.
    */
   raw: string|null|undefined;
-
-  /**
-   * True if error ocurred when parsing the `json` data.
-   * An error message will be displayed.
-   */
-  readonly isError: boolean|null|undefined;
-
-  /**
-   * True when JSON is beeing parsed.
-   */
-  readonly working: boolean|null|undefined;
-
-  /**
-   * True when output should be shown (JSON has been parsed without errors)
-   */
-  readonly showOutput: boolean|null|undefined;
-  connectedCallback(): void;
+  constructor();
+  firstUpdated(): void;
+  render(): any;
   _clearOutput(): void;
   _writeOutput(text: any): void;
 
@@ -128,7 +129,7 @@ declare class JsonViewer extends PolymerElement {
   /**
    * Called when workr error received.
    */
-  _reportError(cause: any): void;
+  _reportError(): void;
 
   /**
    * Compute if output should be shown.

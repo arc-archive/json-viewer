@@ -10,21 +10,29 @@
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
+// tslint:disable:no-any describes the API as best we are able today
+
+import {LitElement, html, css} from 'lit-element';
 
 /**
  * eslint-disable max-len
  */
-declare class JsMaxNumberError extends PolymerElement {
+declare class JsMaxNumberError extends LitElement {
 
   /**
    * A number that is expected to be true.
    */
   expectedNumber: string|null|undefined;
+  constructor();
+  connectedCallback(): void;
+  disconnectedCallback(): void;
+  render(): any;
 
   /**
    * Toggles the collapse element.
    */
   toggle(): void;
+  _keyDown(e: any): void;
 }
 
 declare global {
@@ -33,5 +41,3 @@ declare global {
     "js-max-number-error": JsMaxNumberError;
   }
 }
-
-export {};

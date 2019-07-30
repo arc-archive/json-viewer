@@ -11,11 +11,10 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
-import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
-import '../../@polymer/paper-spinner/paper-spinner.js';
+import { LitElement, html, css } from 'lit-element';
+import '@polymer/paper-spinner/paper-spinner.js';
 import './js-max-number-error.js';
-import {JsonParser} from './json-parser.js';
+import { JsonParser } from './json-parser.js';
 /**
  * `<json-viewer>` A JSON payload viewer for the JSON response.
  *
@@ -72,7 +71,7 @@ import {JsonParser} from './json-parser.js';
  * `--code-type-boolean-value-color` | Color of the boolean value | `#708`
  * `--code-punctuation-value-color` | Punctuation color. | `black`
  * `--code-type-number-value-color` | Color of the numeric value | `blue`
- * `--code-type-text-value-color` | Color of the string value. | `#48A`
+ * `--code-type-text-value-color` | Color of the string value. | `#295469`
  * `--code-array-index-color` | Color of the array counter. | `rgb(119, 119, 119)`
  * `--code-type-link-color` | Color of link inserted into the viewer. | `#1976d2`
  * `--json-viewer-node` | Mixin applied to a "node" | `{}`
@@ -83,17 +82,14 @@ import {JsonParser} from './json-parser.js';
  * @element json-viewer
  * @demo demo/index.html
  */
-class JsonViewer extends PolymerElement {
-  static get template() {
-    return html`
-    <style>
-    :host {
+class JsonViewer extends LitElement {
+  static get styles() {
+    return css`:host {
       display: block;
       font-family: var(--arc-font-code-family, monospace);
       font-size: var(--arc-font-code-font-size, 10pt);
       color: black;
       cursor: text;
-      -webkit-user-select: text;
       user-select: text;
     }
 
@@ -103,6 +99,7 @@ class JsonViewer extends PolymerElement {
 
     .stringValue {
       white-space: normal;
+      color: var(--code-type-text-value-color, #295469);
     }
 
     .brace {
@@ -123,10 +120,6 @@ class JsonViewer extends PolymerElement {
 
     .punctuation {
       color: var(--code-punctuation-value-color, black);
-    }
-
-    .stringValue {
-      color: var(--code-type-text-value-color, #48A);
     }
 
     .node {
@@ -160,7 +153,7 @@ class JsonViewer extends PolymerElement {
     }
 
     .key-name {
-      color: var(--code-type-text-value-color, #48A);
+      color: var(--code-type-text-value-color, #295469);
     }
 
     .rootElementToggleButton {
@@ -204,7 +197,7 @@ class JsonViewer extends PolymerElement {
     }
 
     .dimmed {
-      opacity: var(--code-dimmed-punctuation-opacity, 0.34);
+      opacity: var(--code-dimmed-punctuation-opacity, 0.54);
     }
 
     a[response-anchor] {
@@ -216,16 +209,8 @@ class JsonViewer extends PolymerElement {
     }
 
     .actions-panel {
-      display: -ms-flexbox;
-      display: -webkit-flex;
       display: flex;
-
-      -ms-flex-direction: row;
-      -webkit-flex-direction: row;
       flex-direction: row;
-
-      -ms-flex-align: center;
-      -webkit-align-items: center;
       align-items: center;
     }
 
@@ -240,18 +225,21 @@ class JsonViewer extends PolymerElement {
     output {
       display: block;
       background-color: var(--code-background-color);
-    }
-    </style>
-    <paper-spinner active="[[working]]"></paper-spinner>
-    <template is="dom-if" if="[[isError]]">
-      <div class="error">
-        <p>There was an error parsing JSON data</p>
-      </div>
-    </template>
-    <div class\$="[[_computeActionsPanelClass(showOutput)]]">
+    }`;
+  }
+
+  render() {
+    const { working, isError, json } = this;
+    const showOutput = this._computeShowOutput(working, isError, json);
+    return html`<paper-spinner .active="${working}"></paper-spinner>
+    ${isError ? html`<div class="error">
+      <p>There was an error parsing JSON data</p>
+    </div>` : undefined}
+
+    <div class="${this._computeActionsPanelClass(showOutput)}">
       <slot name="content-action"></slot>
     </div>
-    <output hidden\$="[[!showOutput]]" on-click="_handleDisplayClick"></output>`;
+    <output ?hidden="${!showOutput}" @click="${this._handleDisplayClick}"></output>`;
   }
 
   static get properties() {
@@ -262,10 +250,7 @@ class JsonViewer extends PolymerElement {
        * If the passed object is a string then JSON.parse function will be
        * used to parse string.
        */
-      json: {
-        type: String,
-        observer: '_changed'
-      },
+      json: { type: String },
       /**
        * If it's possible, set this property to the JSON string.
        * It will help to handle big numbers that are not parsed correctly by
@@ -276,39 +261,83 @@ class JsonViewer extends PolymerElement {
        * Calling JSON.stringify on a JS won't help here :) Must be source
        * string.
        */
-      raw: String,
+      raw: { type: String },
       /**
        * True if error ocurred when parsing the `json` data.
        * An error message will be displayed.
        */
-      isError: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        notify: true
-      },
+      _isError: { type: Boolean },
       /**
        * True when JSON is beeing parsed.
        */
-      working: {
-        type: Boolean,
-        readOnly: true,
-        value: false,
-        notify: true
-      },
-      /**
-       * True when output should be shown (JSON has been parsed without errors)
-       */
-      showOutput: {
-        type: Boolean,
-        value: false,
-        computed: '_computeShowOutput(working, isError, json)'
-      }
+      _working: { type: Boolean }
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  get isError() {
+    return this._isError;
+  }
+
+  get _isError() {
+    return this.__isError;
+  }
+
+  set _isError(value) {
+    const old = this.__isError;
+    if (old === value) {
+      return;
+    }
+    this.__isError = value;
+    this.requestUpdate('_isError', old);
+    this.dispatchEvent(new CustomEvent('iserror-changed', {
+      detail: {
+        value
+      }
+    }));
+  }
+
+  get working() {
+    return this._working;
+  }
+
+  get _working() {
+    return this.__working;
+  }
+
+  set _working(value) {
+    const old = this.__working;
+    if (old === value) {
+      return;
+    }
+    this.__working = value;
+    this.requestUpdate('_working', old);
+    this.dispatchEvent(new CustomEvent('working-changed', {
+      detail: {
+        value
+      }
+    }));
+  }
+
+  get json() {
+    return this._json;
+  }
+
+  set json(value) {
+    const old = this._json;
+    if (old === value) {
+      return;
+    }
+    this._json = value;
+    this._changed(value);
+  }
+
+  constructor() {
+    super();
+    this._isError = false;
+    this._working = false;
+  }
+
+  firstUpdated() {
     this._isReady = true;
     if (this.json) {
       this._changed(this.json);
@@ -330,12 +359,12 @@ class JsonViewer extends PolymerElement {
     if (!this._isReady) {
       return;
     }
-    this._setIsError(false);
+    this._isError = false;
     this._clearOutput();
     if (json === undefined) {
       return;
     }
-    this._setWorking(true);
+    this._working = true;
     if (json === null) {
       this._printPrimitiveValue('null', 'nullValue');
       return;
@@ -363,23 +392,22 @@ class JsonViewer extends PolymerElement {
   _printPrimitiveValue(value, klas) {
     const html = `<div class="prettyPrint"><span class="${klas}">${value}</span></div>`;
     this._writeOutput(html);
-    this._setWorking(false);
+    this._working = false;
+    this.dispatchEvent(new CustomEvent('json-viewer-parsed'));
   }
 
   _reportResult(html) {
     this._writeOutput(html);
-    this._setIsError(false);
-    this._setWorking(false);
-    this.dispatchEvent(new CustomEvent('json-viewer-parsed', {}));
+    this._isError = false;
+    this._working = false;
+    this.dispatchEvent(new CustomEvent('json-viewer-parsed'));
   }
 
   // Called when workr error received.
-  _reportError(cause) {
-    console.warn(cause);
-
-    this._setIsError(true);
-    this._setWorking(false);
-    this.dispatchEvent(new CustomEvent('json-viewer-parsed', {}));
+  _reportError() {
+    this._isError = true;
+    this._working = false;
+    this.dispatchEvent(new CustomEvent('json-viewer-parsed'));
   }
   // Compute if output should be shown.
   _computeShowOutput(working, isError, json) {
@@ -441,7 +469,7 @@ class JsonViewer extends PolymerElement {
     this.dispatchEvent(new CustomEvent('request-workspace-append', {
       detail: {
         kind: 'ARC#Request',
-        request: {url}
+        request: { url }
       },
       bubbles: true,
       cancelable: true,

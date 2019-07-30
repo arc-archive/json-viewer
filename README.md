@@ -10,7 +10,7 @@ ARC JSON payload (HTTP response) viewer.
 
 
 ```html
-<json-viewer></json-viewer>
+<json-viewer json="..."></json-viewer>
 ```
 
 ### API components
@@ -34,9 +34,25 @@ npm install --save @advanced-rest-client/json-viewer
     </script>
   </head>
   <body>
-    <json-viewer></json-viewer>
+    <json-viewer json="..."></json-viewer>
   </body>
 </html>
+```
+
+### In a LitElement
+
+```js
+import { LitElement, html } from 'lit-element';
+import '@advanced-rest-client/json-viewer/json-viewer.js';
+
+class SampleElement extends PolymerElement {
+  render() {
+    return html`
+    <json-viewer .json="${this.json}"></json-viewer>
+    `;
+  }
+}
+customElements.define('sample-element', SampleElement);
 ```
 
 ### In a Polymer 3 element
@@ -48,7 +64,7 @@ import '@advanced-rest-client/json-viewer/json-viewer.js';
 class SampleElement extends PolymerElement {
   static get template() {
     return html`
-    <json-viewer></json-viewer>
+    <json-viewer json="[[json]]"></json-viewer>
     `;
   }
 }
@@ -82,19 +98,18 @@ Buttons needs to have `content-action` property set to be included to this view.
 
 ```sh
 git clone https://github.com/advanced-rest-client/json-viewer
-cd api-url-editor
+cd json-viewer
 npm install
-npm install -g polymer-cli
 ```
 
 ### Running the demo locally
 
 ```sh
-polymer serve --npm
-open http://127.0.0.1:<port>/demo/
+npm start
 ```
 
 ### Running the tests
+
 ```sh
-polymer test --npm
+npm test
 ```
