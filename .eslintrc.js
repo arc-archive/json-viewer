@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ['@advanced-rest-client/eslint-config', 'eslint-config-prettier'].map(require.resolve)
+  extends: ['@advanced-rest-client/eslint-config'].map(require.resolve)
 };

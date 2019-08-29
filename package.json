@@ -1,7 +1,7 @@
 {
   "name": "@advanced-rest-client/json-viewer",
   "description": "A JSON payload viewer for the JSON response",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "license": "Apache-2.0",
   "main": "json-viewer.js",
   "keywords": [
@@ -30,20 +30,20 @@
   },
   "dependencies": {
     "@polymer/iron-collapse": "^3.0.0",
-    "@polymer/iron-test-helpers": "^3.0.0",
+    "@polymer/iron-icon": "^3.0.1",
+    "@advanced-rest-client/arc-icons": "^3.0.0",
     "@polymer/paper-spinner": "^3.0.2",
     "lit-element": "^2.2.1"
   },
   "devDependencies": {
-    "@advanced-rest-client/arc-demo-helper": "^1.0.7",
-    "@advanced-rest-client/arc-icons": "^3.0.0",
-    "@advanced-rest-client/eslint-config": "^1.0.6",
+    "@advanced-rest-client/arc-demo-helper": "^1.0.14",
+    "@advanced-rest-client/eslint-config": "^1.1.2",
     "@advanced-rest-client/prettier-config": "^0.1.0",
-    "@advanced-rest-client/testing-karma-sl": "^1.0.2",
+    "@advanced-rest-client/testing-karma-sl": "^1.0.4",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^7.0.0",
-    "@open-wc/testing": "^2.2.1",
-    "@open-wc/testing-karma": "^3.1.5",
+    "@open-wc/testing": "^2.3.3",
+    "@open-wc/testing-karma": "^3.1.30",
     "@polymer/gen-typescript-declarations": "^1.6.2",
     "@polymer/iron-test-helpers": "^3.0.0",
     "@polymer/paper-button": "^3.0.1",
@@ -54,11 +54,11 @@
     "@polymer/paper-listbox": "^3.0.0",
     "@polymer/paper-toast": "^3.0.1",
     "deepmerge": "^4.0.0",
-    "es-dev-server": "^1.8.3",
+    "es-dev-server": "^1.17.0",
     "husky": "^1.0.0",
-    "karma": "^4.2.0",
+    "karma": "^4.3.0",
     "lint-staged": "^8.0.0",
-    "sinon": "^7.3.2",
+    "sinon": "^7.4.1",
     "web-animations-js": "^2.3.2"
   },
   "scripts": {
