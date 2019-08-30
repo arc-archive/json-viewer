@@ -87,8 +87,8 @@ class JsonViewer extends LitElement {
     return css`:host {
       display: block;
       font-family: var(--arc-font-code-family, monospace);
-      font-size: var(--arc-font-code-font-size, 10pt);
-      color: black;
+      font-size: var(--arc-font-code-font-size, 1rem);
+      color: inherit;
       cursor: text;
       user-select: text;
     }
@@ -124,9 +124,10 @@ class JsonViewer extends LitElement {
 
     .node {
       position: relative;
-      white-space: nowrap;
       margin-bottom: 4px;
-      word-wrap: break-word;
+      word-break: break-all;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
     }
 
     .array-counter {
