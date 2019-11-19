@@ -83,7 +83,7 @@ import { JsonParser } from './json-parser.js';
  * @demo demo/index.html
  */
 class JsonViewer extends LitElement {
-  static get styles() {
+  get styles() {
     return css`:host {
       display: block;
       font-family: var(--arc-font-code-family, monospace);
@@ -232,7 +232,8 @@ class JsonViewer extends LitElement {
   render() {
     const { working, isError, json } = this;
     const showOutput = this._computeShowOutput(working, isError, json);
-    return html`<paper-spinner .active="${working}"></paper-spinner>
+    return html`<style>${this.styles}</style>
+    <paper-spinner .active="${working}"></paper-spinner>
     ${isError ? html`<div class="error">
       <p>There was an error parsing JSON data</p>
     </div>` : undefined}
