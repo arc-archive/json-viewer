@@ -16,7 +16,7 @@ import '@polymer/iron-collapse/iron-collapse.js';
 import { info } from '@advanced-rest-client/arc-icons/ArcIcons.js';
 /* eslint-disable max-len */
 class JsMaxNumberError extends LitElement {
-  static get styles() {
+  get styles() {
     return css`:host {
       display: inline-block;
       vertical-align: text-bottom;
@@ -69,7 +69,7 @@ class JsMaxNumberError extends LitElement {
 
 
   render() {
-    return html`
+    return html`<style>${this.styles}</style>
     <div
       class="content"
       @click="${this.toggle}"
