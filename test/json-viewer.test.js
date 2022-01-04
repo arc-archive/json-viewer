@@ -1,5 +1,5 @@
 import { fixture, assert, nextFrame } from '@open-wc/testing';
-import sinon from 'sinon/pkg/sinon-esm.js';
+import sinon from 'sinon';
 import '../json-viewer.js';
 
 describe('<json-viewer>', function() {

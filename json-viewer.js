@@ -12,7 +12,6 @@ License for the specific language governing permissions and limitations under
 the License.
 */
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/paper-spinner/paper-spinner.js';
 import './js-max-number-error.js';
 import { JsonParser } from './json-parser.js';
 /**
@@ -205,10 +204,6 @@ class JsonViewer extends LitElement {
       color: var(--code-type-link-color, #1976d2);
     }
 
-    paper-spinner:not([active]) {
-      display: none;
-    }
-
     .actions-panel {
       display: flex;
       flex-direction: row;
@@ -233,7 +228,6 @@ class JsonViewer extends LitElement {
     const { working, isError, json } = this;
     const showOutput = this._computeShowOutput(working, isError, json);
     return html`<style>${this.styles}</style>
-    <paper-spinner .active="${working}"></paper-spinner>
     ${isError ? html`<div class="error">
       <p>There was an error parsing JSON data</p>
     </div>` : undefined}
@@ -335,6 +329,7 @@ class JsonViewer extends LitElement {
 
   constructor() {
     super();
+    this.raw = undefined;
     this._isError = false;
     this._working = false;
   }
@@ -387,7 +382,7 @@ class JsonViewer extends LitElement {
       const html = parser.getHTML();
       this._reportResult(html);
     } catch (cause) {
-      this._reportError(cause);
+      this._reportError();
     }
   }
 
@@ -405,7 +400,7 @@ class JsonViewer extends LitElement {
     this.dispatchEvent(new CustomEvent('json-viewer-parsed'));
   }
 
-  // Called when workr error received.
+  // Called when worker error received.
   _reportError() {
     this._isError = true;
     this._working = false;
@@ -444,7 +439,7 @@ class JsonViewer extends LitElement {
     if (!toggleId) {
       return;
     }
-    const parent = this.shadowRoot.querySelector('div[data-element="' + toggleId + '"]');
+    const parent = /** @type HTMLElement */ (this.shadowRoot.querySelector('div[data-element="' + toggleId + '"]'));
     if (!parent) {
       return;
     }

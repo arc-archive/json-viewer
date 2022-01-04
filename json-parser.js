@@ -64,7 +64,7 @@ export class JsonParser {
    * Parse JSON data
    * @param {*} data
    * @param {Object} opts
-   * @return {Stirng}
+   * @return {string}
    */
   parse(data, opts) {
     opts = opts || {};
@@ -180,7 +180,7 @@ export class JsonParser {
       const hasManyChildren = this.elementsCounter - elementNo > 1;
       result += '<div data-element="' + elementNo + '" style="margin-left: 24px" class="' +
         this.cssPrefix + 'node">';
-      const _nan = isNaN(key);
+      const _nan = isNaN(/** @type any */ (key));
       if (_nan) {
         result += '&quot;';
       }
