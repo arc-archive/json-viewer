@@ -15,6 +15,11 @@
 export {JsonParser};
 
 declare class JsonParser {
+  rawData: string;
+  cssPrefix: string;
+  jsonValue: any;
+  latestError: string;
+
   constructor(opts: any);
   _setJson(jsonData: any): void;
 
@@ -26,7 +31,7 @@ declare class JsonParser {
   /**
    * Parse JSON data
    */
-  parse(data: any, opts: object|null): Stirng|null;
+  parse(data: any, opts: object|null): string|null;
   parseNullValue(): any;
   parseNumericValue(number: any): any;
   parseBooleanValue(bool: any): any;

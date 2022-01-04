@@ -2,12 +2,6 @@
 
 This component is deprecated. Use `@advanced-rest-client/arc-response` instead.
 
-[![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/json-viewer.svg)](https://www.npmjs.com/package/@advanced-rest-client/json-viewer)
-
-[![Build Status](https://travis-ci.org/advanced-rest-client/json-viewer.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/json-viewer)
-
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/json-viewer)
-
 ## &lt;json-viewer&gt;
 
 ARC JSON payload (HTTP response) viewer.
@@ -17,14 +11,11 @@ ARC JSON payload (HTTP response) viewer.
 <json-viewer json="..."></json-viewer>
 ```
 
-### API components
-
-This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)
-
 ## Usage
 
 ### Installation
-```
+
+```sh
 npm install --save @advanced-rest-client/json-viewer
 ```
 

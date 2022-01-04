@@ -1,7 +1,7 @@
 {
   "name": "@advanced-rest-client/json-viewer",
   "description": "A JSON payload viewer for the JSON response",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "license": "Apache-2.0",
   "main": "json-viewer.js",
   "keywords": [
@@ -30,33 +30,21 @@
   },
   "dependencies": {
     "@advanced-rest-client/arc-icons": "^3.1.2",
-    "@polymer/iron-collapse": "^3.0.0",
-    "@polymer/paper-spinner": "^3.0.2",
+    "@anypoint-web-components/awc": "^1.0.8",
     "lit-element": "^2.4.0"
   },
   "devDependencies": {
-    "@advanced-rest-client/arc-demo-helper": "^1.0.17",
-    "@advanced-rest-client/testing-karma-sl": "^1.4.2",
-    "@open-wc/testing": "^2.5.29",
-    "@open-wc/testing-karma": "^4.0.8",
-    "@polymer/iron-test-helpers": "^3.0.0",
-    "@polymer/paper-button": "^3.0.1",
-    "@polymer/paper-dropdown-menu": "^3.1.0",
-    "@polymer/paper-icon-button": "^3.0.2",
-    "@polymer/paper-input": "^3.2.1",
-    "@polymer/paper-item": "^3.0.0",
-    "@polymer/paper-listbox": "^3.0.0",
-    "@polymer/paper-toast": "^3.0.1",
-    "deepmerge": "^4.2.2",
-    "es-dev-server": "^1.57.7",
-    "karma": "^5.2.3",
-    "sinon": "^9.2.0",
-    "web-animations-js": "^2.3.2"
+    "@advanced-rest-client/arc-demo-helper": "^5.0.4",
+    "@open-wc/testing": "^3.0.3",
+    "@types/mocha": "^9.0.0",
+    "@web/dev-server": "^0.1.8",
+    "@web/test-runner": "^0.13.23",
+    "@web/test-runner-playwright": "^0.8.4",
+    "sinon": "^12.0.1"
   },
   "scripts": {
-    "test": "karma start --coverage",
-    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
-    "test:watch": "karma start --auto-watch=true --single-run=false",
-    "test:sl": "karma start karma.sl.config.js --compatibility all --coverage"
+    "start": "web-dev-server --app-index demo/index.html --node-resolve --open --watch --root-dir .",
+    "test": "web-test-runner test/**/*.test.js --coverage --node-resolve --playwright --browsers chromium firefox webkit",
+    "test:watch": "web-test-runner test/**/*.test.js --node-resolve --watch --playwright --browsers chromium"
   }
 }

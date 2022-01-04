@@ -12,7 +12,7 @@ License for the specific language governing permissions and limitations under
 the License.
 */
 import { LitElement, html, css } from 'lit-element';
-import '@polymer/iron-collapse/iron-collapse.js';
+import '@anypoint-web-components/awc/anypoint-collapse.js';
 import { info } from '@advanced-rest-client/arc-icons/ArcIcons.js';
 /* eslint-disable max-len */
 class JsMaxNumberError extends LitElement {
@@ -79,14 +79,13 @@ class JsMaxNumberError extends LitElement {
         <slot></slot>
       </div>
     </div>
-    <iron-collapse>
+    <anypoint-collapse>
       <div class="message">
         <p>The number used in the response is unsafe in JavaScript environment and therefore as a JSON value.</p>
         <p>Original value for the number (represented as string) is <span class="expected">"${this.expectedNumber}"</span></p>
         <p>This number will not work in web environment and should be passed as a string, not a number.</p>
-        <p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER" target="_blank">Read more about numbers in JavaScript</a>.</p>
       </div>
-    </iron-collapse>`;
+    </anypoint-collapse>`;
   }
 
   static get properties() {
@@ -107,7 +106,7 @@ class JsMaxNumberError extends LitElement {
       super.connectedCallback();
     }
     this.setAttribute('role', 'button');
-    this.setAttribute('tabindex', 0);
+    this.setAttribute('tabindex', '0');
     this.setAttribute('aria-expanded', 'false');
     this.setAttribute('aria-label', 'Activate to see warning details');
     this.addEventListener('keydown', this._keyDown);
@@ -122,7 +121,7 @@ class JsMaxNumberError extends LitElement {
 
   // Toggles the collapse element.
   toggle() {
-    const node = this.shadowRoot.querySelector('iron-collapse');
+    const node = this.shadowRoot.querySelector('anypoint-collapse');
     node.toggle();
     if (node.opened) {
       this.setAttribute('aria-expanded', 'true');
